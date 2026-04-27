@@ -4,698 +4,656 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>客戶維護管理系統</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #f5f4f0;
-  --surface: #ffffff;
-  --surface2: #f0efe9;
-  --border: #e2e0d8;
-  --border2: #ccc9be;
-  --text: #1a1917;
-  --text2: #6b6860;
-  --text3: #9c9a94;
-  --blue: #1a56a0;
-  --blue-bg: #e8f0fb;
-  --blue-text: #1a4a8a;
-  --green: #2e7d32;
-  --green-bg: #e8f5e9;
-  --green-text: #1b5e20;
-  --amber: #b45309;
-  --amber-bg: #fef3c7;
-  --amber-text: #92400e;
-  --gray-bg: #f0efe9;
-  --gray-text: #5a5955;
-  --red: #c0392b;
-  --red-bg: #fdecea;
-  --red-text: #7f1d1d;
-  --radius: 8px;
-  --radius-lg: 12px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
-}
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; min-height: 100vh; }
-a { color: var(--blue); }
-
-/* Layout */
-.app { max-width: 1280px; margin: 0 auto; padding: 20px 24px 60px; }
-.app-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-.app-title { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; display: flex; align-items: center; gap: 10px; }
-.app-title span.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); display: inline-block; }
-.sync-status { font-size: 12px; color: var(--text3); display: flex; align-items: center; gap: 6px; }
-.sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
-/* Tabs */
-.tabs { display: flex; gap: 2px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 3px; margin-bottom: 20px; width: fit-content; }
-.tab { padding: 7px 20px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--text2); border-radius: var(--radius); background: none; border: none; font-family: inherit; transition: all 0.15s; }
-.tab.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
-.tab:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.5); }
-
-/* Panel */
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f6fa; color: #1a1a2e; font-size: 14px; }
+.app { max-width: 1280px; margin: 0 auto; padding: 1rem 1.5rem; }
+.app-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid #e0e4ef; }
+.app-title { font-size: 20px; font-weight: 600; color: #1a1a2e; }
+.app-badge { font-size: 11px; padding: 3px 10px; border-radius: 99px; background: #dbeafe; color: #1d4ed8; font-weight: 600; }
+.tabs { display: flex; gap: 4px; margin-bottom: 1.25rem; border-bottom: 1px solid #e0e4ef; }
+.tab { padding: 9px 18px; font-size: 14px; cursor: pointer; color: #6b7280; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; border-top: none; border-left: none; border-right: none; border-radius: 0; transition: color 0.15s; }
+.tab.active { color: #1d4ed8; border-bottom-color: #1d4ed8; font-weight: 600; }
+.tab:hover:not(.active) { color: #374151; }
 .panel { display: none; }
 .panel.active { display: block; }
-
-/* Stats */
-.stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
-.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; }
-.stat-label { font-size: 11px; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-.stat-num { font-size: 28px; font-weight: 600; font-family: 'DM Mono', monospace; line-height: 1; }
-.stat-num.blue { color: var(--blue); }
-.stat-num.amber { color: var(--amber); }
-.stat-num.green { color: var(--green); }
-.stat-num.gray { color: var(--text2); }
-
-/* Card */
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 16px; }
-.card-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-.card-title { font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
-.card-body { padding: 18px; }
-
-/* Search bar */
-.search-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
-
-/* Form */
-.form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.section-title { font-size: 11px; font-weight: 600; color: #6b7280; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1rem; }
+.form-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
 .form-group { display: flex; flex-direction: column; gap: 5px; }
-.form-group.full { grid-column: 1/-1; }
-.form-group.half2 { grid-column: span 2; }
-label.field-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; }
-input[type=text], input[type=url], input[type=date], input[type=number], input[type=datetime-local], select, textarea {
-  font-family: 'Noto Sans TC', sans-serif; font-size: 13px; padding: 8px 11px;
-  border: 1px solid var(--border); border-radius: var(--radius);
-  background: var(--surface); color: var(--text); outline: none; width: 100%;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,86,160,0.1); }
-textarea { resize: vertical; min-height: 64px; }
-
-/* Buttons */
-.btn { font-family: 'Noto Sans TC', sans-serif; font-size: 13px; font-weight: 500; padding: 8px 16px; border-radius: var(--radius); cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text); transition: all 0.12s; white-space: nowrap; }
-.btn:hover { background: var(--surface2); border-color: var(--border2); }
-.btn:active { transform: scale(0.98); }
-.btn.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
-.btn.primary:hover { background: #1447a0; }
-.btn.danger { background: var(--red-bg); color: var(--red-text); border-color: #f5c6c5; }
-.btn.danger:hover { background: #fad4d2; }
-.btn.success { background: var(--green-bg); color: var(--green-text); border-color: #c3e6cb; }
-.btn.success:hover { background: #d4edda; }
-.btn.sm { padding: 5px 11px; font-size: 12px; }
-.btn-row { display: flex; gap: 8px; margin-top: 16px; align-items: center; }
-
-/* Table */
+.form-group.full { grid-column: 1 / -1; }
+label { font-size: 12px; font-weight: 500; color: #374151; }
+input, select, textarea { font-size: 13px; width: 100%; padding: 7px 11px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; color: #1a1a2e; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+input:focus, select:focus, textarea:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+textarea { resize: vertical; min-height: 60px; }
+.btn { padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; border: 1px solid #d1d5db; background: #fff; color: #374151; font-weight: 500; transition: all 0.12s; }
+.btn:hover { background: #f9fafb; border-color: #9ca3af; }
+.btn.primary { background: #1d4ed8; color: #fff; border-color: #1d4ed8; }
+.btn.primary:hover { background: #1e40af; }
+.btn.danger { background: #fef2f2; color: #dc2626; border-color: #fca5a5; }
+.btn.danger:hover { background: #fee2e2; }
+.btn.small { padding: 4px 10px; font-size: 12px; }
+.btn.success-btn { background: #f0fdf4; color: #15803d; border-color: #86efac; }
+.btn.success-btn:hover { background: #dcfce7; }
+.btn.sync-btn { background: #eff6ff; color: #1d4ed8; border-color: #93c5fd; }
+.btn.sync-btn:hover { background: #dbeafe; }
+.card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1rem; }
+.stat-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.stat-label { font-size: 12px; color: #6b7280; margin-bottom: 6px; font-weight: 500; }
+.stat-val { font-size: 28px; font-weight: 700; }
+.stat-val.blue { color: #1d4ed8; }
+.stat-val.amber { color: #d97706; }
+.stat-val.green { color: #15803d; }
+.stat-val.gray { color: #374151; }
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th { font-size: 11px; font-weight: 600; color: var(--text3); text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; text-transform: uppercase; letter-spacing: 0.04em; background: var(--surface2); }
-th:first-child { border-radius: var(--radius) 0 0 0; }
-th:last-child { border-radius: 0 var(--radius) 0 0; }
-td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+th { font-size: 11px; font-weight: 600; color: #6b7280; text-align: left; padding: 9px 10px; border-bottom: 1px solid #e5e7eb; background: #f9fafb; white-space: nowrap; }
+td { padding: 10px 10px; border-bottom: 1px solid #f3f4f6; color: #1a1a2e; vertical-align: middle; }
 tr:last-child td { border-bottom: none; }
-tbody tr:hover td { background: #fafaf7; }
-.cell-sm { font-size: 12px; }
-.cell-mono { font-family: 'DM Mono', monospace; font-size: 12px; }
-.ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; max-width: 100px; }
-
-/* Badge */
-.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 99px; white-space: nowrap; }
-.badge::before { content:''; width:5px; height:5px; border-radius:50%; flex-shrink:0; }
-.badge.pending { background: var(--amber-bg); color: var(--amber-text); } .badge.pending::before { background: var(--amber); }
-.badge.processing { background: var(--blue-bg); color: var(--blue-text); } .badge.processing::before { background: var(--blue); }
-.badge.done { background: var(--green-bg); color: var(--green-text); } .badge.done::before { background: var(--green); }
-.badge.paused { background: var(--gray-bg); color: var(--gray-text); } .badge.paused::before { background: #888; }
-
-/* Progress */
-.progress-wrap { display: flex; align-items: center; gap: 6px; }
-.progress-bar { flex: 1; height: 5px; background: var(--surface2); border-radius: 99px; overflow: hidden; min-width: 50px; }
-.progress-fill { height: 100%; border-radius: 99px; background: var(--blue); transition: width 0.3s; }
-.progress-text { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); min-width: 28px; }
-
-/* Options list */
-.opt-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-.opt-tag { display: inline-flex; align-items: center; gap: 5px; background: var(--surface2); border: 1px solid var(--border); border-radius: 99px; padding: 3px 10px 3px 12px; font-size: 12px; color: var(--text2); }
-.opt-tag button { background: none; border: none; cursor: pointer; font-size: 14px; color: var(--text3); line-height: 1; padding: 0; transition: color 0.1s; }
-.opt-tag button:hover { color: var(--red); }
-.opt-add-row { display: flex; gap: 6px; }
-.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-
-/* Modal */
-.overlay { display: none; position: fixed; inset: 0; background: rgba(20,20,18,0.5); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-.overlay.open { display: flex; }
-.modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; width: 420px; max-width: 95vw; box-shadow: var(--shadow-md); animation: slideUp 0.18s ease; }
-@keyframes slideUp { from{transform:translateY(12px);opacity:0} to{transform:translateY(0);opacity:1} }
-.modal-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
-.modal-sub { font-size: 12px; color: var(--text3); margin-bottom: 18px; }
-.modal-form { display: flex; flex-direction: column; gap: 12px; }
-.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
-
-/* Toast */
-.toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
-.toast { background: var(--text); color: #fff; font-size: 13px; padding: 10px 16px; border-radius: var(--radius); box-shadow: var(--shadow-md); animation: fadeIn 0.2s ease; display: flex; align-items: center; gap: 8px; }
-.toast.success { background: var(--green); }
-.toast.error { background: var(--red); }
-@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-
-/* Loading */
-.loading-overlay { display: none; position: fixed; inset: 0; background: rgba(245,244,240,0.7); z-index: 300; align-items: center; justify-content: center; backdrop-filter: blur(1px); }
-.loading-overlay.open { display: flex; }
-.spinner { width: 28px; height: 28px; border: 3px solid var(--border2); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* Empty */
-.empty { text-align: center; padding: 48px 20px; color: var(--text3); }
-.empty svg { margin-bottom: 12px; opacity: 0.3; }
-
-/* Op log */
-.op-log-list { font-size: 12px; color: var(--text2); max-height: 80px; overflow-y: auto; }
-.op-log-item { padding: 2px 0; border-bottom: 1px dashed var(--border); }
-.op-log-item:last-child { border: none; }
-
-/* Link btn */
-.link-btn { background: none; border: none; cursor: pointer; color: var(--blue); font-size: 12px; font-family: inherit; text-decoration: underline; padding: 0; }
-
-hr.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
-.section-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+tr:hover td { background: #f9fafb; }
+.badge { display: inline-block; font-size: 11px; padding: 3px 9px; border-radius: 99px; font-weight: 600; white-space: nowrap; }
+.badge.pending { background: #fef3c7; color: #92400e; }
+.badge.done { background: #dcfce7; color: #15803d; }
+.badge.processing { background: #dbeafe; color: #1d4ed8; }
+.badge.paused { background: #f3f4f6; color: #6b7280; }
+.search-bar { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 10px; margin-bottom: 1rem; align-items: end; }
+.options-list { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; min-height: 32px; }
+.options-list li { display: flex; align-items: center; gap: 4px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 99px; padding: 3px 10px; font-size: 12px; color: #374151; }
+.options-list li button { background: none; border: none; cursor: pointer; font-size: 15px; color: #9ca3af; line-height: 1; padding: 0 0 0 2px; }
+.options-list li button:hover { color: #dc2626; }
+.add-option-row { display: flex; gap: 8px; align-items: center; }
+.link-btn { background: none; border: none; color: #1d4ed8; cursor: pointer; font-size: 12px; text-decoration: underline; padding: 0; }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; padding: 1.75rem; width: 440px; max-width: 95vw; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+.modal-title { font-size: 16px; font-weight: 600; margin-bottom: 1.25rem; color: #1a1a2e; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.25rem; }
+.empty-state { text-align: center; padding: 3rem; color: #9ca3af; font-size: 13px; }
+.ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; max-width: 120px; }
+.progress-bar { height: 6px; border-radius: 99px; background: #e5e7eb; overflow: hidden; margin-top: 4px; }
+.progress-fill { height: 100%; border-radius: 99px; background: #3b82f6; }
+.sync-bar { display: flex; align-items: center; gap: 10px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 14px; margin-bottom: 1rem; font-size: 13px; color: #1d4ed8; }
+.sync-bar input { flex: 1; font-size: 12px; background: #fff; }
+.sync-status { font-size: 12px; color: #6b7280; margin-left: auto; }
+.sync-status.ok { color: #15803d; }
+.sync-status.err { color: #dc2626; }
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.op-log { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; }
+.op-log-title { font-size: 12px; font-weight: 600; color: #6b7280; margin-bottom: 8px; }
+.op-item { font-size: 12px; color: #374151; padding: 6px 8px; background: #f9fafb; border-radius: 6px; margin-bottom: 4px; }
 </style>
 </head>
 <body>
-
-<div class="loading-overlay" id="loading"><div class="spinner"></div></div>
-<div class="toast-wrap" id="toast-wrap"></div>
-
 <div class="app">
-  <!-- Header -->
   <div class="app-header">
-    <div class="app-title"><span class="dot"></span>客戶維護管理系統</div>
-    <div class="sync-status"><span class="sync-dot" id="sync-dot"></span><span id="sync-text">連線中...</span></div>
+    <div class="app-title">客戶維護管理系統</div>
+    <span class="app-badge">CRM</span>
+    <span id="sync-indicator" style="font-size:12px; color:#6b7280; margin-left:auto;"></span>
   </div>
 
-  <!-- Tabs -->
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('view')">📋 檢視 / 報表</button>
-    <button class="tab" onclick="switchTab('input')">✏️ 新增 / 編輯</button>
-    <button class="tab" onclick="switchTab('settings')">⚙️ 選單管理</button>
+    <button class="tab active" onclick="switchTab('view')">檢視 / 報表</button>
+    <button class="tab" onclick="switchTab('input')">新增 / 編輯</button>
+    <button class="tab" onclick="switchTab('settings')">選單管理</button>
+    <button class="tab" onclick="switchTab('sync')">Google Sheet 設定</button>
   </div>
 
-  <!-- ===== 檢視頁 ===== -->
+  <!-- 檢視頁面 -->
   <div class="panel active" id="panel-view">
-    <div class="stat-row" id="stat-row">
-      <div class="stat-card"><div class="stat-label">全部案件</div><div class="stat-num gray" id="s-total">—</div></div>
-      <div class="stat-card"><div class="stat-label">待處理</div><div class="stat-num amber" id="s-pending">—</div></div>
-      <div class="stat-card"><div class="stat-label">進行中</div><div class="stat-num blue" id="s-processing">—</div></div>
-      <div class="stat-card"><div class="stat-label">已完成</div><div class="stat-num green" id="s-done">—</div></div>
-    </div>
-
+    <div class="stat-grid" id="stat-grid"></div>
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">篩選條件</span>
-        <button class="btn sm" onclick="clearSearch()">清除篩選</button>
-      </div>
-      <div class="card-body">
-        <div class="search-grid">
-          <div class="form-group">
-            <label class="field-label">搜尋客戶</label>
-            <input type="text" id="s-client" placeholder="輸入客戶名稱..." oninput="renderTable()">
-          </div>
-          <div class="form-group">
-            <label class="field-label">日期起</label>
-            <input type="date" id="s-from" onchange="renderTable()">
-          </div>
-          <div class="form-group">
-            <label class="field-label">日期迄</label>
-            <input type="date" id="s-to" onchange="renderTable()">
-          </div>
-          <div class="form-group">
-            <label class="field-label">狀態</label>
-            <select id="s-status" onchange="renderTable()"><option value="">全部</option></select>
-          </div>
-          <div class="form-group" style="justify-content:flex-end;">
-            <label class="field-label">&nbsp;</label>
-            <button class="btn primary" onclick="loadRecords()">🔄 重新整理</button>
-          </div>
+      <div class="search-bar">
+        <div class="form-group">
+          <label>搜尋客戶</label>
+          <input type="text" id="search-client" placeholder="輸入客戶名稱..." oninput="renderTable()">
         </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title" id="table-count">資料列表</span>
+        <div class="form-group">
+          <label>日期起</label>
+          <input type="date" id="search-date-from" onchange="renderTable()">
+        </div>
+        <div class="form-group">
+          <label>日期迄</label>
+          <input type="date" id="search-date-to" onchange="renderTable()">
+        </div>
+        <div class="form-group">
+          <label>狀態</label>
+          <select id="search-status" onchange="renderTable()">
+            <option value="">全部</option>
+          </select>
+        </div>
+        <div class="form-group" style="justify-content:flex-end;">
+          <label>&nbsp;</label>
+          <button class="btn" onclick="clearSearch()">清除篩選</button>
+        </div>
       </div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th style="width:90px">客戶</th>
-              <th style="width:70px">產品別</th>
-              <th style="width:85px">產品</th>
-              <th style="width:65px">業務</th>
-              <th style="width:65px">工程師</th>
-              <th style="width:115px">維護期間</th>
-              <th style="width:90px">進度</th>
-              <th style="width:72px">狀態</th>
-              <th style="width:110px">操作</th>
-              <th style="width:55px">連結</th>
+              <th>客戶</th><th>產品別</th><th>產品</th><th>業務</th><th>工程師</th>
+              <th>維護期間</th><th>進度</th><th>狀態</th><th>操作</th><th>連結</th>
             </tr>
           </thead>
-          <tbody id="tbody"></tbody>
+          <tbody id="data-table-body"></tbody>
         </table>
-        <div id="empty-state" class="empty" style="display:none">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
-          <div>尚無符合條件的資料</div>
-        </div>
+        <div id="empty-state" class="empty-state" style="display:none;">尚無資料，請至「新增 / 編輯」頁面新增客戶資料</div>
       </div>
     </div>
   </div>
 
-  <!-- ===== 新增/編輯頁 ===== -->
+  <!-- 新增/編輯頁面 -->
   <div class="panel" id="panel-input">
     <div class="card">
-      <div class="card-header">
-        <span class="card-title" id="form-title">新增資料</span>
-        <div style="display:flex;gap:8px;">
-          <button class="btn sm danger" id="btn-del" style="display:none" onclick="deleteRecord()">🗑 刪除</button>
-          <button class="btn sm" onclick="clearForm()">清除表單</button>
+      <div class="section-title" id="form-mode-label">新增資料</div>
+      <div class="form-grid form-grid-3">
+        <div class="form-group">
+          <label>客戶名稱 *</label>
+          <input type="text" id="f-client" placeholder="請輸入客戶名稱">
+        </div>
+        <div class="form-group">
+          <label>產品別 *</label>
+          <select id="f-category"></select>
+        </div>
+        <div class="form-group">
+          <label>產品 *</label>
+          <select id="f-product"></select>
+        </div>
+        <div class="form-group">
+          <label>業務</label>
+          <select id="f-biz"></select>
+        </div>
+        <div class="form-group">
+          <label>工程師</label>
+          <select id="f-engineer"></select>
+        </div>
+        <div class="form-group">
+          <label>狀態</label>
+          <select id="f-status"></select>
+        </div>
+        <div class="form-group">
+          <label>維護開始日期</label>
+          <input type="date" id="f-date-start">
+        </div>
+        <div class="form-group">
+          <label>維護結束日期</label>
+          <input type="date" id="f-date-end">
+        </div>
+        <div class="form-group">
+          <label>進度 (%)</label>
+          <input type="number" id="f-progress" min="0" max="100" placeholder="0~100" value="0">
+        </div>
+        <div class="form-group full">
+          <label>相關資訊連結</label>
+          <input type="url" id="f-link" placeholder="https://...">
         </div>
       </div>
-      <div class="card-body">
-        <div class="form-grid">
-          <div class="form-group">
-            <label class="field-label">客戶名稱 *</label>
-            <input type="text" id="f-client" placeholder="請輸入客戶名稱">
-          </div>
-          <div class="form-group">
-            <label class="field-label">產品別 *</label>
-            <select id="f-category"></select>
-          </div>
-          <div class="form-group">
-            <label class="field-label">產品 *</label>
-            <select id="f-product"></select>
-          </div>
-          <div class="form-group">
-            <label class="field-label">業務</label>
-            <select id="f-biz"></select>
-          </div>
-          <div class="form-group">
-            <label class="field-label">工程師</label>
-            <select id="f-engineer"></select>
-          </div>
-          <div class="form-group">
-            <label class="field-label">狀態</label>
-            <select id="f-status"></select>
-          </div>
-          <div class="form-group">
-            <label class="field-label">維護開始日期</label>
-            <input type="date" id="f-start">
-          </div>
-          <div class="form-group">
-            <label class="field-label">維護結束日期</label>
-            <input type="date" id="f-end">
-          </div>
-          <div class="form-group">
-            <label class="field-label">進度 (%)</label>
-            <input type="number" id="f-progress" min="0" max="100" value="0" placeholder="0~100">
-          </div>
-          <div class="form-group full">
-            <label class="field-label">相關資訊連結</label>
-            <input type="url" id="f-link" placeholder="https://...">
-          </div>
-        </div>
-        <div class="btn-row">
-          <button class="btn primary" onclick="saveRecord()">💾 儲存</button>
-          <span id="edit-hint" style="font-size:12px;color:var(--text3);display:none">編輯模式 — 儲存將覆蓋原始資料</span>
-        </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn primary" onclick="saveRecord()">儲存資料</button>
+        <button class="btn" onclick="clearForm()">清除表單</button>
+        <button class="btn danger" id="btn-delete" style="display:none;" onclick="deleteRecord()">刪除此筆</button>
       </div>
     </div>
   </div>
 
-  <!-- ===== 選單管理 ===== -->
+  <!-- 選單管理 -->
   <div class="panel" id="panel-settings">
-    <div class="settings-grid" id="settings-grid"></div>
+    <div class="settings-grid" id="settings-container"></div>
+  </div>
+
+  <!-- Google Sheet 設定 -->
+  <div class="panel" id="panel-sync">
+    <div class="card">
+      <div class="section-title">Google Sheets 整合設定</div>
+      <p style="font-size:13px; color:#6b7280; margin-bottom:1rem; line-height:1.6;">
+        透過 Google Apps Script 讓資料自動儲存至 Google Sheets。請依照下方步驟設定。
+      </p>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label>Apps Script Web App URL</label>
+        <input type="url" id="sheet-url" placeholder="https://script.google.com/macros/s/YOUR_ID/exec" value="">
+      </div>
+      <div style="display:flex; gap:8px; margin-bottom:1rem;">
+        <button class="btn primary" onclick="saveSheetUrl()">儲存設定</button>
+        <button class="btn sync-btn" onclick="syncToSheet()">立即同步至 Sheet</button>
+        <button class="btn sync-btn" onclick="loadFromSheet()">從 Sheet 載入</button>
+      </div>
+      <div id="sync-log" style="font-size:12px; color:#6b7280; min-height:20px;"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">設定步驟教學</div>
+      <ol style="font-size:13px; line-height:2; color:#374151; padding-left:1.2rem;">
+        <li>前往 <strong>Google Sheets</strong> 建立新試算表，命名為「客戶維護管理」</li>
+        <li>點選選單「擴充功能」→「Apps Script」，開啟編輯器</li>
+        <li>將下方的 Apps Script 程式碼貼入並儲存</li>
+        <li>點選「部署」→「新增部署」→ 類型選「網頁應用程式」</li>
+        <li>執行身分選「我」，存取權選「所有人」，點「部署」</li>
+        <li>複製產生的 URL 貼到上方輸入框</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Apps Script 程式碼（複製貼到 Google Apps Script）</div>
+      <pre id="gas-code" style="background:#f8fafc; border:1px solid #e5e7eb; border-radius:8px; padding:1rem; font-size:11px; overflow-x:auto; line-height:1.6; color:#1a1a2e; white-space:pre-wrap;"></pre>
+      <button class="btn" style="margin-top:8px;" onclick="copyGasCode()">複製程式碼</button>
+    </div>
   </div>
 </div>
 
-<!-- ===== 操作 Modal ===== -->
-<div class="overlay" id="op-overlay">
+<!-- 操作 Modal -->
+<div class="modal-overlay" id="op-modal">
   <div class="modal">
     <div class="modal-title">執行操作記錄</div>
-    <div class="modal-sub" id="op-sub">記錄執行狀況並更新案件狀態</div>
-    <div class="modal-form">
-      <div class="form-group">
-        <label class="field-label">執行工程師</label>
-        <select id="op-eng"></select>
-      </div>
-      <div class="form-group">
-        <label class="field-label">執行時間</label>
-        <input type="datetime-local" id="op-time">
-      </div>
-      <div class="form-group">
-        <label class="field-label">更新狀態</label>
-        <select id="op-status"></select>
-      </div>
-      <div class="form-group">
-        <label class="field-label">備註</label>
-        <textarea id="op-note" rows="2" placeholder="備註說明（選填）..."></textarea>
-      </div>
-      <div id="op-log-area" style="display:none">
-        <hr class="divider">
-        <div class="section-label">歷史操作記錄</div>
-        <div class="op-log-list" id="op-log-list"></div>
-      </div>
+    <div class="form-group" style="margin-bottom:10px;">
+      <label>執行工程師</label>
+      <select id="op-engineer"></select>
     </div>
+    <div class="form-group" style="margin-bottom:10px;">
+      <label>執行時間</label>
+      <input type="datetime-local" id="op-time">
+    </div>
+    <div class="form-group" style="margin-bottom:10px;">
+      <label>切換狀態至</label>
+      <select id="op-status"></select>
+    </div>
+    <div class="form-group" style="margin-bottom:10px;">
+      <label>進度 (%)</label>
+      <input type="number" id="op-progress" min="0" max="100" value="100">
+    </div>
+    <div class="form-group" style="margin-bottom:10px;">
+      <label>備註說明</label>
+      <textarea id="op-note" rows="2" placeholder="備註說明..."></textarea>
+    </div>
+    <div id="op-log-area"></div>
     <div class="modal-actions">
       <button class="btn" onclick="closeModal()">取消</button>
-      <button class="btn primary" onclick="confirmOp()">✔ 確認執行完畢</button>
+      <button class="btn primary" onclick="confirmOp()">確認記錄</button>
     </div>
   </div>
 </div>
 
 <script>
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbz5qn3T4wYFB3l3elwgUxC61Tcxuqxv0Vf3RsShZThcsnsoqqbnCehOfoCRHJqEDUWh/exec';
+// ========== 資料 ==========
+let opts = {
+  category: ['硬體','軟體','網路','雲端','其他'],
+  product: ['防火牆','伺服器','NAS','ERP','CRM','AP系統','交換器','路由器'],
+  biz: ['王大明','李美華','陳志偉','林怡君'],
+  engineer: ['張建國','劉雅婷','黃信宏','吳佳穎','鄭凱文'],
+  status: ['待處理','進行中','已完成','暫停']
+};
 
-let records = [];
-let options = { category:[], product:[], biz:[], engineer:[], status:[] };
+let records = [
+  { id:1, client:'台積電', category:'硬體', product:'伺服器', biz:'王大明', engineer:'張建國', dateStart:'2025-01-01', dateEnd:'2025-12-31', progress:60, status:'進行中', link:'https://example.com', ops:[] },
+  { id:2, client:'鴻海精密', category:'軟體', product:'ERP', biz:'李美華', engineer:'劉雅婷', dateStart:'2025-03-01', dateEnd:'2025-08-31', progress:30, status:'待處理', link:'', ops:[] },
+  { id:3, client:'聯發科', category:'網路', product:'防火牆', biz:'陳志偉', engineer:'黃信宏', dateStart:'2024-07-01', dateEnd:'2025-06-30', progress:100, status:'已完成', link:'https://example.com/mtk', ops:[] }
+];
+let nextId = 4;
 let editingId = null;
 let opTargetId = null;
 
-// ─── API ───────────────────────────────────────────────
-async function apiGet(action) {
-  const res = await fetch(`${GAS_URL}?action=${action}`);
-  return res.json();
+// ========== localStorage ==========
+function save() {
+  localStorage.setItem('crm_records', JSON.stringify(records));
+  localStorage.setItem('crm_opts', JSON.stringify(opts));
+  localStorage.setItem('crm_nextId', nextId);
 }
-async function apiPost(body) {
-  const res = await fetch(GAS_URL, {
-    method: 'POST',
-    body: JSON.stringify(body)
-  });
-  return res.json();
-}
-
-// ─── Init ──────────────────────────────────────────────
-async function init() {
-  showLoading(true);
-  try {
-    const [recRes, optRes] = await Promise.all([apiGet('getRecords'), apiGet('getOptions')]);
-    if (recRes.ok) records = recRes.data;
-    if (optRes.ok) options = { ...options, ...optRes.data };
-    setSyncStatus(true);
-    populateSearchStatus();
-    renderStats();
-    renderTable();
-  } catch(e) {
-    setSyncStatus(false);
-    toast('無法連線到伺服器，請檢查 GAS 網址', 'error');
-  }
-  showLoading(false);
+function load() {
+  const r = localStorage.getItem('crm_records');
+  const o = localStorage.getItem('crm_opts');
+  const n = localStorage.getItem('crm_nextId');
+  if(r) records = JSON.parse(r);
+  if(o) opts = JSON.parse(o);
+  if(n) nextId = parseInt(n);
 }
 
-async function loadRecords() {
-  showLoading(true);
-  try {
-    const res = await apiGet('getRecords');
-    if (res.ok) { records = res.data; renderStats(); renderTable(); toast('資料已更新'); }
-  } catch(e) { toast('重新整理失敗', 'error'); }
-  showLoading(false);
-}
-
-// ─── UI Helpers ────────────────────────────────────────
-function showLoading(v) { document.getElementById('loading').classList.toggle('open', v); }
-function setSyncStatus(ok) {
-  document.getElementById('sync-dot').style.background = ok ? 'var(--green)' : 'var(--red)';
-  document.getElementById('sync-text').textContent = ok ? '已連線' : '連線失敗';
-}
-function toast(msg, type='success') {
-  const w = document.getElementById('toast-wrap');
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.textContent = msg;
-  w.appendChild(el);
-  setTimeout(() => el.remove(), 3000);
-}
-function openLink(url) { window.open(url, '_blank'); }
-
+// ========== 頁籤 ==========
 function switchTab(t) {
-  document.querySelectorAll('.tab').forEach((el,i) => el.classList.toggle('active', ['view','input','settings'][i]===t));
-  document.querySelectorAll('.panel').forEach((el,i) => el.classList.toggle('active', ['panel-view','panel-input','panel-settings'][i]==='panel-'+t));
-  if (t==='input') populateFormSelects();
-  if (t==='settings') renderSettings();
-  if (t==='view') { renderStats(); renderTable(); }
+  const names = ['view','input','settings','sync'];
+  document.querySelectorAll('.tab').forEach((el,i) => el.classList.toggle('active', names[i]===t));
+  document.querySelectorAll('.panel').forEach((el,i) => el.classList.toggle('active', 'panel-'+names[i]==='panel-'+t));
+  if(t==='view'){ renderStats(); renderTable(); populateSearchStatus(); }
+  if(t==='input'){ populateFormSelects(); }
+  if(t==='settings'){ renderSettings(); }
+  if(t==='sync'){ renderGasCode(); loadSheetUrl(); }
 }
 
-// ─── Stats ─────────────────────────────────────────────
+// ========== 統計 ==========
 function renderStats() {
-  document.getElementById('s-total').textContent = records.length;
-  document.getElementById('s-pending').textContent = records.filter(r=>r.status==='待處理').length;
-  document.getElementById('s-processing').textContent = records.filter(r=>r.status==='進行中').length;
-  document.getElementById('s-done').textContent = records.filter(r=>r.status==='已完成').length;
+  const pending = records.filter(r=>r.status==='待處理').length;
+  const processing = records.filter(r=>r.status==='進行中').length;
+  const done = records.filter(r=>r.status==='已完成').length;
+  document.getElementById('stat-grid').innerHTML = `
+    <div class="stat-card"><div class="stat-label">全部案件</div><div class="stat-val gray">${records.length}</div></div>
+    <div class="stat-card"><div class="stat-label">待處理</div><div class="stat-val amber">${pending}</div></div>
+    <div class="stat-card"><div class="stat-label">進行中</div><div class="stat-val blue">${processing}</div></div>
+    <div class="stat-card"><div class="stat-label">已完成</div><div class="stat-val green">${done}</div></div>
+  `;
 }
 
-// ─── Table ─────────────────────────────────────────────
-function statusBadge(s) {
-  const m = {'待處理':'pending','進行中':'processing','已完成':'done','暫停':'paused'};
-  return `<span class="badge ${m[s]||'paused'}">${s}</span>`;
-}
-function progressBar(p) {
-  const pct = Math.min(100, Math.max(0, parseInt(p)||0));
-  return `<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div><span class="progress-text">${pct}%</span></div>`;
-}
-
+// ========== 搜尋篩選 ==========
 function getFiltered() {
-  const sc = (document.getElementById('s-client').value||'').toLowerCase();
-  const sf = document.getElementById('s-from').value;
-  const st = document.getElementById('s-to').value;
-  const ss = document.getElementById('s-status').value;
+  const sc = (document.getElementById('search-client').value||'').toLowerCase();
+  const sf = document.getElementById('search-date-from').value;
+  const st = document.getElementById('search-date-to').value;
+  const ss = document.getElementById('search-status').value;
   return records.filter(r => {
-    if (sc && !(r.client||'').toLowerCase().includes(sc)) return false;
-    if (ss && r.status !== ss) return false;
-    if (sf && r.dateEnd < sf) return false;
-    if (st && r.dateStart > st) return false;
+    if(sc && !r.client.toLowerCase().includes(sc)) return false;
+    if(ss && r.status!==ss) return false;
+    if(sf && r.dateEnd < sf) return false;
+    if(st && r.dateStart > st) return false;
     return true;
   });
 }
-
-function renderTable() {
-  const filtered = getFiltered();
-  const tbody = document.getElementById('tbody');
-  const empty = document.getElementById('empty-state');
-  document.getElementById('table-count').textContent = `資料列表（${filtered.length} 筆）`;
-  if (!filtered.length) { tbody.innerHTML=''; empty.style.display='block'; return; }
-  empty.style.display = 'none';
-  tbody.innerHTML = filtered.map(r => `
-    <tr>
-      <td><span class="ellipsis" title="${r.client||''}">${r.client||'—'}</span></td>
-      <td><span class="cell-sm">${r.category||'—'}</span></td>
-      <td><span class="ellipsis" title="${r.product||''}">${r.product||'—'}</span></td>
-      <td><span class="cell-sm">${r.biz||'—'}</span></td>
-      <td><span class="cell-sm">${r.engineer||'—'}</span></td>
-      <td><span class="cell-mono" style="font-size:11px;line-height:1.6">${r.dateStart||''}<br>${r.dateEnd||''}</span></td>
-      <td>${progressBar(r.progress)}</td>
-      <td>${statusBadge(r.status)}</td>
-      <td>
-        <div style="display:flex;gap:5px;flex-wrap:wrap;">
-          <button class="btn sm success" onclick="openOpModal('${r.id}')">執行</button>
-          <button class="btn sm" onclick="editRecord('${r.id}')">編輯</button>
-        </div>
-      </td>
-      <td>${r.link ? `<button class="link-btn" onclick="openLink('${r.link}')">開啟</button>` : '—'}</td>
-    </tr>
-  `).join('');
-}
-
 function clearSearch() {
-  ['s-client','s-from','s-to'].forEach(id => document.getElementById(id).value='');
-  document.getElementById('s-status').value='';
+  ['search-client','search-date-from','search-date-to','search-status'].forEach(id => { document.getElementById(id).value=''; });
   renderTable();
 }
 
+// ========== 表格 ==========
+function statusBadge(s) {
+  const map = {'待處理':'pending','進行中':'processing','已完成':'done','暫停':'paused'};
+  return `<span class="badge ${map[s]||''}">${s}</span>`;
+}
+function renderTable() {
+  const filtered = getFiltered();
+  const tbody = document.getElementById('data-table-body');
+  const empty = document.getElementById('empty-state');
+  if(!filtered.length){ tbody.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  tbody.innerHTML = filtered.map(r=>`
+    <tr>
+      <td><span class="ellipsis" title="${r.client}">${r.client}</span></td>
+      <td>${r.category}</td>
+      <td><span class="ellipsis" title="${r.product}">${r.product}</span></td>
+      <td>${r.biz}</td>
+      <td>${r.engineer}</td>
+      <td style="font-size:11px; line-height:1.6;">${r.dateStart||'-'}<br>${r.dateEnd||'-'}</td>
+      <td style="min-width:80px;">
+        <span style="font-size:11px;">${r.progress}%</span>
+        <div class="progress-bar"><div class="progress-fill" style="width:${r.progress}%"></div></div>
+      </td>
+      <td>${statusBadge(r.status)}</td>
+      <td>
+        <div style="display:flex; gap:4px; flex-wrap:wrap;">
+          <button class="btn small success-btn" onclick="openOpModal(${r.id})">執行</button>
+          <button class="btn small" onclick="editRecord(${r.id})">編輯</button>
+        </div>
+      </td>
+      <td>${r.link?`<button class="link-btn" onclick="window.open('${r.link}','_blank')">開啟</button>`:'-'}</td>
+    </tr>
+  `).join('');
+  renderStats();
+}
 function populateSearchStatus() {
-  const sel = document.getElementById('s-status');
-  sel.innerHTML = '<option value="">全部</option>' + (options.status||[]).map(s=>`<option>${s}</option>`).join('');
+  const sel = document.getElementById('search-status');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">全部</option>' + opts.status.map(s=>`<option value="${s}">${s}</option>`).join('');
+  sel.value = cur;
 }
 
-// ─── Form ──────────────────────────────────────────────
+// ========== 表單 ==========
 function populateFormSelects() {
-  ['category','product','biz','engineer','status'].forEach(k => {
-    const el = document.getElementById('f-'+k);
-    if (el) el.innerHTML = (options[k]||[]).map(v=>`<option>${v}</option>`).join('');
+  const map = {category:'f-category', product:'f-product', biz:'f-biz', engineer:'f-engineer', status:'f-status'};
+  Object.entries(map).forEach(([k,id])=>{
+    const el = document.getElementById(id);
+    if(el) el.innerHTML = opts[k].map(v=>`<option>${v}</option>`).join('');
   });
 }
-
-function clearForm() {
-  editingId = null;
-  document.getElementById('form-title').textContent = '新增資料';
-  document.getElementById('btn-del').style.display = 'none';
-  document.getElementById('edit-hint').style.display = 'none';
-  ['f-client','f-start','f-end','f-link'].forEach(id => document.getElementById(id).value='');
-  document.getElementById('f-progress').value = '0';
-  populateFormSelects();
-}
-
-function editRecord(id) {
-  const r = records.find(x=>String(x.id)===String(id));
-  if (!r) return;
-  editingId = id;
-  switchTab('input');
-  setTimeout(() => {
-    document.getElementById('form-title').textContent = `編輯資料 — ${r.client}`;
-    document.getElementById('btn-del').style.display = 'inline-block';
-    document.getElementById('edit-hint').style.display = 'inline';
-    document.getElementById('f-client').value = r.client||'';
-    document.getElementById('f-category').value = r.category||'';
-    document.getElementById('f-product').value = r.product||'';
-    document.getElementById('f-biz').value = r.biz||'';
-    document.getElementById('f-engineer').value = r.engineer||'';
-    document.getElementById('f-status').value = r.status||'';
-    document.getElementById('f-start').value = r.dateStart||'';
-    document.getElementById('f-end').value = r.dateEnd||'';
-    document.getElementById('f-progress').value = r.progress||0;
-    document.getElementById('f-link').value = r.link||'';
-  }, 30);
-}
-
-async function saveRecord() {
+function saveRecord() {
   const client = document.getElementById('f-client').value.trim();
-  if (!client) { toast('請輸入客戶名稱', 'error'); return; }
-  const payload = {
+  if(!client){ alert('請輸入客戶名稱'); return; }
+  const rec = {
+    id: editingId || nextId++,
     client,
     category: document.getElementById('f-category').value,
-    product:  document.getElementById('f-product').value,
-    biz:      document.getElementById('f-biz').value,
+    product: document.getElementById('f-product').value,
+    biz: document.getElementById('f-biz').value,
     engineer: document.getElementById('f-engineer').value,
-    status:   document.getElementById('f-status').value,
-    dateStart:document.getElementById('f-start').value,
-    dateEnd:  document.getElementById('f-end').value,
-    progress: Math.min(100,Math.max(0,parseInt(document.getElementById('f-progress').value)||0)),
-    link:     document.getElementById('f-link').value.trim()
+    status: document.getElementById('f-status').value,
+    dateStart: document.getElementById('f-date-start').value,
+    dateEnd: document.getElementById('f-date-end').value,
+    progress: Math.min(100, Math.max(0, parseInt(document.getElementById('f-progress').value)||0)),
+    link: document.getElementById('f-link').value.trim(),
+    ops: editingId ? (records.find(r=>r.id===editingId)||{ops:[]}).ops : []
   };
-  showLoading(true);
-  try {
-    let res;
-    if (editingId) {
-      const existing = records.find(r=>String(r.id)===String(editingId));
-      res = await apiPost({ action:'updateRecord', id: editingId, opLog: existing?.opLog||[], ...payload });
-    } else {
-      res = await apiPost({ action:'addRecord', ...payload });
-    }
-    if (res.ok) {
-      toast(editingId ? '更新成功！' : '新增成功！');
-      clearForm();
-      await loadRecords();
-    } else {
-      toast(res.error||'儲存失敗', 'error');
-    }
-  } catch(e) { toast('網路錯誤', 'error'); }
-  showLoading(false);
+  if(editingId) { const idx = records.findIndex(r=>r.id===editingId); if(idx>-1) records[idx]=rec; }
+  else records.push(rec);
+  save();
+  clearForm();
+  alert(editingId ? '✅ 更新成功！' : '✅ 新增成功！');
+  editingId = null;
+}
+function clearForm() {
+  editingId = null;
+  document.getElementById('form-mode-label').textContent='新增資料';
+  ['f-client','f-date-start','f-date-end','f-link'].forEach(id=>{ document.getElementById(id).value=''; });
+  document.getElementById('f-progress').value='0';
+  document.getElementById('btn-delete').style.display='none';
+  populateFormSelects();
+}
+function editRecord(id) {
+  const r = records.find(x=>x.id===id);
+  if(!r) return;
+  editingId = id;
+  switchTab('input');
+  setTimeout(()=>{
+    document.getElementById('form-mode-label').textContent='編輯資料（#'+id+'）';
+    document.getElementById('f-client').value=r.client;
+    document.getElementById('f-category').value=r.category;
+    document.getElementById('f-product').value=r.product;
+    document.getElementById('f-biz').value=r.biz;
+    document.getElementById('f-engineer').value=r.engineer;
+    document.getElementById('f-status').value=r.status;
+    document.getElementById('f-date-start').value=r.dateStart||'';
+    document.getElementById('f-date-end').value=r.dateEnd||'';
+    document.getElementById('f-progress').value=r.progress;
+    document.getElementById('f-link').value=r.link||'';
+    document.getElementById('btn-delete').style.display='inline-block';
+  }, 50);
+}
+function deleteRecord() {
+  if(!editingId) return;
+  if(!confirm('確定要刪除此筆資料？此動作無法復原。')) return;
+  records = records.filter(r=>r.id!==editingId);
+  save();
+  clearForm();
+  alert('已刪除');
 }
 
-async function deleteRecord() {
-  if (!editingId) return;
-  if (!confirm('確定要刪除此筆資料？此操作無法復原。')) return;
-  showLoading(true);
-  try {
-    const res = await apiPost({ action:'deleteRecord', id: editingId });
-    if (res.ok) { toast('已刪除'); clearForm(); await loadRecords(); switchTab('view'); }
-    else toast(res.error||'刪除失敗', 'error');
-  } catch(e) { toast('網路錯誤', 'error'); }
-  showLoading(false);
-}
-
-// ─── Op Modal ──────────────────────────────────────────
+// ========== 執行 Modal ==========
 function openOpModal(id) {
   opTargetId = id;
-  const r = records.find(x=>String(x.id)===String(id));
-  document.getElementById('op-sub').textContent = `客戶：${r?.client||id}`;
-  const engSel = document.getElementById('op-eng');
-  const stsSel = document.getElementById('op-status');
-  engSel.innerHTML = (options.engineer||[]).map(e=>`<option>${e}</option>`).join('');
-  stsSel.innerHTML = (options.status||[]).map(s=>`<option${r&&r.status===s?' selected':''}>${s}</option>`).join('');
-  if (r) { engSel.value = r.engineer; }
+  const r = records.find(x=>x.id===id);
+  document.getElementById('op-engineer').innerHTML = opts.engineer.map(e=>`<option>${e}</option>`).join('');
+  document.getElementById('op-status').innerHTML = opts.status.map(s=>`<option${r&&r.status===s?' selected':''}>${s}</option>`).join('');
+  if(r) { document.getElementById('op-engineer').value = r.engineer; document.getElementById('op-progress').value = r.progress; }
   const now = new Date();
   const pad = n=>String(n).padStart(2,'0');
   document.getElementById('op-time').value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
   document.getElementById('op-note').value = '';
-  const logs = r?.opLog||[];
   const logArea = document.getElementById('op-log-area');
-  const logList = document.getElementById('op-log-list');
-  if (logs.length) {
-    logArea.style.display='block';
-    logList.innerHTML = logs.slice().reverse().map(l=>`<div class="op-log-item">${l.time||''} ｜ ${l.engineer||''} ｜ ${l.status||''} ${l.note?`｜ ${l.note}`:''}</div>`).join('');
-  } else { logArea.style.display='none'; }
-  document.getElementById('op-overlay').classList.add('open');
+  if(r && r.ops && r.ops.length) {
+    logArea.innerHTML = `<div class="op-log"><div class="op-log-title">歷史操作記錄</div>${r.ops.slice(-3).reverse().map(o=>`<div class="op-item">🕐 ${o.time} ｜ ${o.engineer} ｜ ${o.status} ${o.note?'｜ '+o.note:''}</div>`).join('')}</div>`;
+  } else { logArea.innerHTML=''; }
+  document.getElementById('op-modal').classList.add('open');
 }
-
-function closeModal() { document.getElementById('op-overlay').classList.remove('open'); }
-
-async function confirmOp() {
-  const opEntry = {
-    engineer: document.getElementById('op-eng').value,
-    time:     document.getElementById('op-time').value,
-    status:   document.getElementById('op-status').value,
-    note:     document.getElementById('op-note').value.trim()
-  };
-  showLoading(true);
+function closeModal() { document.getElementById('op-modal').classList.remove('open'); }
+function confirmOp() {
+  const r = records.find(x=>x.id===opTargetId);
+  if(!r) return;
+  const eng = document.getElementById('op-engineer').value;
+  const time = document.getElementById('op-time').value;
+  const sts = document.getElementById('op-status').value;
+  const prog = parseInt(document.getElementById('op-progress').value)||0;
+  const note = document.getElementById('op-note').value;
+  r.ops = r.ops||[];
+  r.ops.push({ engineer:eng, time, status:sts, progress:prog, note });
+  r.status = sts;
+  r.progress = prog;
+  save();
   closeModal();
-  try {
-    const res = await apiPost({ action:'addOpLog', id: opTargetId, opEntry });
-    if (res.ok) { toast(`已記錄 — ${opEntry.engineer} 執行完畢`); await loadRecords(); }
-    else toast(res.error||'操作失敗', 'error');
-  } catch(e) { toast('網路錯誤', 'error'); }
-  showLoading(false);
+  renderTable();
+  alert(`✅ 已記錄\n工程師：${eng}\n時間：${time}\n狀態：${sts}`);
 }
 
-// ─── Settings ──────────────────────────────────────────
-const optLabels = { category:'產品別', product:'產品', biz:'業務', engineer:'工程師', status:'狀態' };
-
+// ========== 選單管理 ==========
 function renderSettings() {
-  const grid = document.getElementById('settings-grid');
-  grid.innerHTML = Object.keys(optLabels).map(k => `
+  const labels = { category:'產品別', product:'產品', biz:'業務', engineer:'工程師', status:'狀態' };
+  const container = document.getElementById('settings-container');
+  container.innerHTML = Object.keys(labels).map(k=>`
     <div class="card">
-      <div class="card-header"><span class="card-title">${optLabels[k]}</span></div>
-      <div class="card-body">
-        <div class="opt-tags" id="otags-${k}">
-          ${(options[k]||[]).map(v=>`
-            <span class="opt-tag">${v}
-              <button onclick="removeOpt('${k}','${v}')" title="刪除">×</button>
-            </span>`).join('')}
-        </div>
-        <div class="opt-add-row">
-          <input type="text" id="onew-${k}" placeholder="輸入新選項...">
-          <button class="btn sm primary" onclick="addOpt('${k}')">新增</button>
-        </div>
+      <div class="section-title">${labels[k]}</div>
+      <ul class="options-list">${opts[k].map(v=>`<li>${v}<button onclick="removeOpt('${k}','${v.replace(/'/g,"\\'")}')">×</button></li>`).join('')}</ul>
+      <div class="add-option-row">
+        <input type="text" id="new-opt-${k}" placeholder="新增選項...">
+        <button class="btn small primary" onclick="addOpt('${k}')">新增</button>
       </div>
     </div>
   `).join('');
 }
-
-async function addOpt(k) {
-  const inp = document.getElementById('onew-'+k);
+function addOpt(k) {
+  const inp = document.getElementById('new-opt-'+k);
   const val = inp.value.trim();
-  if (!val) return;
-  if ((options[k]||[]).includes(val)) { toast('選項已存在', 'error'); return; }
-  options[k] = [...(options[k]||[]), val];
-  inp.value = '';
-  await syncOptions(k);
+  if(!val){ alert('請輸入選項名稱'); return; }
+  if(opts[k].includes(val)){ alert('已存在此選項'); return; }
+  opts[k].push(val);
+  inp.value='';
+  save();
   renderSettings();
-  populateSearchStatus();
+}
+function removeOpt(k, v) {
+  if(!confirm(`確定刪除「${v}」？`)) return;
+  opts[k] = opts[k].filter(x=>x!==v);
+  save();
+  renderSettings();
 }
 
-async function removeOpt(k, v) {
-  if (!confirm(`確定刪除選項「${v}」？`)) return;
-  options[k] = (options[k]||[]).filter(x=>x!==v);
-  await syncOptions(k);
-  renderSettings();
-  populateSearchStatus();
+// ========== Google Sheet 整合 ==========
+function saveSheetUrl() {
+  const url = document.getElementById('sheet-url').value.trim();
+  localStorage.setItem('crm_sheet_url', url);
+  document.getElementById('sync-log').textContent = '✅ URL 已儲存';
 }
-
-async function syncOptions(k) {
+function loadSheetUrl() {
+  const url = localStorage.getItem('crm_sheet_url')||'';
+  document.getElementById('sheet-url').value = url;
+}
+async function syncToSheet() {
+  const url = document.getElementById('sheet-url').value.trim();
+  if(!url){ alert('請先填入 Apps Script URL'); return; }
+  document.getElementById('sync-log').textContent = '⏳ 同步中...';
   try {
-    const res = await apiPost({ action:'saveOptions', key:k, values: options[k] });
-    if (!res.ok) toast('選單儲存失敗', 'error');
-    else toast(`「${optLabels[k]}」已更新`);
-  } catch(e) { toast('網路錯誤', 'error'); }
+    const payload = { action:'sync', records, opts };
+    const res = await fetch(url, { method:'POST', body: JSON.stringify(payload) });
+    const text = await res.text();
+    document.getElementById('sync-log').textContent = '✅ 同步成功：' + text;
+    document.getElementById('sync-indicator').textContent = '已同步 ' + new Date().toLocaleTimeString();
+  } catch(e) {
+    document.getElementById('sync-log').textContent = '❌ 同步失敗：' + e.message;
+  }
+}
+async function loadFromSheet() {
+  const url = document.getElementById('sheet-url').value.trim();
+  if(!url){ alert('請先填入 Apps Script URL'); return; }
+  document.getElementById('sync-log').textContent = '⏳ 載入中...';
+  try {
+    const res = await fetch(url + '?action=load');
+    const data = await res.json();
+    if(data.records) { records = data.records; save(); renderTable(); renderStats(); }
+    if(data.opts) { opts = data.opts; save(); }
+    document.getElementById('sync-log').textContent = '✅ 載入成功，共 ' + records.length + ' 筆資料';
+  } catch(e) {
+    document.getElementById('sync-log').textContent = '❌ 載入失敗：' + e.message;
+  }
+}
+function renderGasCode() {
+  const code = `// Google Apps Script — 客戶維護管理系統後端
+// 貼到 Google Apps Script 後部署為網頁應用程式
+
+const SHEET_NAME = '資料';
+const OPTS_SHEET = '選單設定';
+
+function doGet(e) {
+  const action = e.parameter.action;
+  if (action === 'load') {
+    return loadData();
+  }
+  return ContentService.createTextOutput('OK');
 }
 
-// ─── Bootstrap ─────────────────────────────────────────
-init();
+function doPost(e) {
+  const payload = JSON.parse(e.postData.contents);
+  if (payload.action === 'sync') {
+    return saveData(payload.records, payload.opts);
+  }
+  return ContentService.createTextOutput('Unknown action');
+}
+
+function getOrCreateSheet(name) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(name);
+  if (!sheet) sheet = ss.insertSheet(name);
+  return sheet;
+}
+
+function saveData(records, opts) {
+  const sheet = getOrCreateSheet(SHEET_NAME);
+  sheet.clearContents();
+  const headers = ['ID','客戶','產品別','產品','業務','工程師','維護開始','維護結束','進度','狀態','連結','操作記錄'];
+  sheet.appendRow(headers);
+  records.forEach(r => {
+    sheet.appendRow([
+      r.id, r.client, r.category, r.product, r.biz,
+      r.engineer, r.dateStart, r.dateEnd, r.progress,
+      r.status, r.link, JSON.stringify(r.ops||[])
+    ]);
+  });
+  // 儲存選單
+  const optsSheet = getOrCreateSheet(OPTS_SHEET);
+  optsSheet.clearContents();
+  optsSheet.appendRow(['類別', '選項值']);
+  Object.entries(opts).forEach(([k, vals]) => {
+    vals.forEach(v => optsSheet.appendRow([k, v]));
+  });
+  return ContentService.createTextOutput('已儲存 ' + records.length + ' 筆');
+}
+
+function loadData() {
+  const sheet = getOrCreateSheet(SHEET_NAME);
+  const rows = sheet.getDataRange().getValues();
+  const records = [];
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    records.push({
+      id: r[0], client: r[1], category: r[2], product: r[3],
+      biz: r[4], engineer: r[5], dateStart: r[6], dateEnd: r[7],
+      progress: r[8], status: r[9], link: r[10],
+      ops: JSON.parse(r[11] || '[]')
+    });
+  }
+  const optsSheet = getOrCreateSheet(OPTS_SHEET);
+  const optsRows = optsSheet.getDataRange().getValues();
+  const opts = {};
+  for (let i = 1; i < optsRows.length; i++) {
+    const [k, v] = optsRows[i];
+    if (!opts[k]) opts[k] = [];
+    opts[k].push(v);
+  }
+  const result = JSON.stringify({ records, opts });
+  return ContentService.createTextOutput(result).setMimeType(ContentService.MimeType.JSON);
+}`;
+  document.getElementById('gas-code').textContent = code;
+}
+function copyGasCode() {
+  const code = document.getElementById('gas-code').textContent;
+  navigator.clipboard.writeText(code).then(()=>alert('✅ 已複製到剪貼簿'));
+}
+
+// ========== 初始化 ==========
+load();
+renderStats();
+renderTable();
+populateSearchStatus();
 </script>
 </body>
 </html>
