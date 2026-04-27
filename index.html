@@ -3,657 +3,1799 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>客戶維護管理系統</title>
+<title>推薦清單記錄</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f6fa; color: #1a1a2e; font-size: 14px; }
-.app { max-width: 1280px; margin: 0 auto; padding: 1rem 1.5rem; }
-.app-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid #e0e4ef; }
-.app-title { font-size: 20px; font-weight: 600; color: #1a1a2e; }
-.app-badge { font-size: 11px; padding: 3px 10px; border-radius: 99px; background: #dbeafe; color: #1d4ed8; font-weight: 600; }
-.tabs { display: flex; gap: 4px; margin-bottom: 1.25rem; border-bottom: 1px solid #e0e4ef; }
-.tab { padding: 9px 18px; font-size: 14px; cursor: pointer; color: #6b7280; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; border-top: none; border-left: none; border-right: none; border-radius: 0; transition: color 0.15s; }
-.tab.active { color: #1d4ed8; border-bottom-color: #1d4ed8; font-weight: 600; }
-.tab:hover:not(.active) { color: #374151; }
-.panel { display: none; }
-.panel.active { display: block; }
-.section-title { font-size: 11px; font-weight: 600; color: #6b7280; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1rem; }
-.form-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
-.form-group { display: flex; flex-direction: column; gap: 5px; }
-.form-group.full { grid-column: 1 / -1; }
-label { font-size: 12px; font-weight: 500; color: #374151; }
-input, select, textarea { font-size: 13px; width: 100%; padding: 7px 11px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; color: #1a1a2e; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
-input:focus, select:focus, textarea:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
-textarea { resize: vertical; min-height: 60px; }
-.btn { padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; border: 1px solid #d1d5db; background: #fff; color: #374151; font-weight: 500; transition: all 0.12s; }
-.btn:hover { background: #f9fafb; border-color: #9ca3af; }
-.btn.primary { background: #1d4ed8; color: #fff; border-color: #1d4ed8; }
-.btn.primary:hover { background: #1e40af; }
-.btn.danger { background: #fef2f2; color: #dc2626; border-color: #fca5a5; }
-.btn.danger:hover { background: #fee2e2; }
-.btn.small { padding: 4px 10px; font-size: 12px; }
-.btn.success-btn { background: #f0fdf4; color: #15803d; border-color: #86efac; }
-.btn.success-btn:hover { background: #dcfce7; }
-.btn.sync-btn { background: #eff6ff; color: #1d4ed8; border-color: #93c5fd; }
-.btn.sync-btn:hover { background: #dbeafe; }
-.card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1rem; }
-.stat-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-.stat-label { font-size: 12px; color: #6b7280; margin-bottom: 6px; font-weight: 500; }
-.stat-val { font-size: 28px; font-weight: 700; }
-.stat-val.blue { color: #1d4ed8; }
-.stat-val.amber { color: #d97706; }
-.stat-val.green { color: #15803d; }
-.stat-val.gray { color: #374151; }
-.table-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th { font-size: 11px; font-weight: 600; color: #6b7280; text-align: left; padding: 9px 10px; border-bottom: 1px solid #e5e7eb; background: #f9fafb; white-space: nowrap; }
-td { padding: 10px 10px; border-bottom: 1px solid #f3f4f6; color: #1a1a2e; vertical-align: middle; }
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: #f9fafb; }
-.badge { display: inline-block; font-size: 11px; padding: 3px 9px; border-radius: 99px; font-weight: 600; white-space: nowrap; }
-.badge.pending { background: #fef3c7; color: #92400e; }
-.badge.done { background: #dcfce7; color: #15803d; }
-.badge.processing { background: #dbeafe; color: #1d4ed8; }
-.badge.paused { background: #f3f4f6; color: #6b7280; }
-.search-bar { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 10px; margin-bottom: 1rem; align-items: end; }
-.options-list { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; min-height: 32px; }
-.options-list li { display: flex; align-items: center; gap: 4px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 99px; padding: 3px 10px; font-size: 12px; color: #374151; }
-.options-list li button { background: none; border: none; cursor: pointer; font-size: 15px; color: #9ca3af; line-height: 1; padding: 0 0 0 2px; }
-.options-list li button:hover { color: #dc2626; }
-.add-option-row { display: flex; gap: 8px; align-items: center; }
-.link-btn { background: none; border: none; color: #1d4ed8; cursor: pointer; font-size: 12px; text-decoration: underline; padding: 0; }
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: center; justify-content: center; }
-.modal-overlay.open { display: flex; }
-.modal { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; padding: 1.75rem; width: 440px; max-width: 95vw; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
-.modal-title { font-size: 16px; font-weight: 600; margin-bottom: 1.25rem; color: #1a1a2e; }
-.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.25rem; }
-.empty-state { text-align: center; padding: 3rem; color: #9ca3af; font-size: 13px; }
-.ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; max-width: 120px; }
-.progress-bar { height: 6px; border-radius: 99px; background: #e5e7eb; overflow: hidden; margin-top: 4px; }
-.progress-fill { height: 100%; border-radius: 99px; background: #3b82f6; }
-.sync-bar { display: flex; align-items: center; gap: 10px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 14px; margin-bottom: 1rem; font-size: 13px; color: #1d4ed8; }
-.sync-bar input { flex: 1; font-size: 12px; background: #fff; }
-.sync-status { font-size: 12px; color: #6b7280; margin-left: auto; }
-.sync-status.ok { color: #15803d; }
-.sync-status.err { color: #dc2626; }
-.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.op-log { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; }
-.op-log-title { font-size: 12px; font-weight: 600; color: #6b7280; margin-bottom: 8px; }
-.op-item { font-size: 12px; color: #374151; padding: 6px 8px; background: #f9fafb; border-radius: 6px; margin-bottom: 4px; }
+  :root {
+    --bg: #faf8f4;
+    --surface: #ffffff;
+    --surface2: #f3efe8;
+    --border: #e2d9c8;
+    --accent: #c0773a;
+    --accent2: #7a5c3a;
+    --text: #2a2018;
+    --text2: #7a6a54;
+    --text3: #b8a890;
+    --tag-restaurant: #c84b4b;
+    --tag-hotel: #4b7bc8;
+    --tag-attraction: #4ba87c;
+    --tag-shopping: #9b59b6;
+    --shadow: 0 2px 12px rgba(42,32,24,0.08);
+    --shadow-lg: 0 8px 32px rgba(42,32,24,0.14);
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--text);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-lg);
+  }
+  header h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 1.5rem;
+    color: #faf8f4;
+    letter-spacing: 0.05em;
+  }
+  header .subtitle {
+    font-size: 0.75rem;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+  }
+  .header-logo {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+  }
+  .header-count {
+    margin-left: auto;
+    background: rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.78rem;
+    color: var(--text3);
+  }
+  .header-count span { color: var(--accent); font-weight: 700; }
+
+  /* TABS */
+  .tabs {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    gap: 0;
+    padding: 0 24px;
+    overflow-x: auto;
+    position: sticky;
+    top: 77px;
+    z-index: 99;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 14px 22px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text2);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    white-space: nowrap;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 7px;
+    letter-spacing: 0.03em;
+  }
+  .tab:hover { color: var(--accent); }
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    font-weight: 700;
+  }
+  .tab .tab-count {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 1px 7px;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+  .tab.active .tab-count { background: #fde8d4; color: var(--accent); }
+
+  /* MAIN */
+  main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+  /* PANELS */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ADD FORM */
+  .form-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 32px;
+    border: 1px solid var(--border);
+  }
+  .form-card h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: var(--text);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .form-card h2::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .type-selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .type-btn {
+    padding: 14px 8px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text2);
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+  }
+  .type-btn .type-icon { font-size: 1.6rem; }
+  .type-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .type-btn.active {
+    border-color: var(--accent);
+    background: #fdf3ea;
+    color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(192,119,58,0.12);
+  }
+
+  .form-fields { display: none; }
+  .form-fields.visible { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .field-grid .full { grid-column: 1 / -1; }
+
+  .field-group { display: flex; flex-direction: column; gap: 6px; }
+  .field-group label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text2);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .field-group label .required { color: var(--accent); margin-left: 2px; }
+  .field-group input,
+  .field-group textarea,
+  .field-group select {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text);
+    background: var(--bg);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .field-group input:focus,
+  .field-group textarea:focus,
+  .field-group select:focus { border-color: var(--accent); background: #fff; }
+  .field-group textarea { min-height: 90px; resize: vertical; }
+
+  .radio-group {
+    display: flex; gap: 10px;
+  }
+  .radio-btn {
+    flex: 1;
+    padding: 9px 8px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text2);
+    transition: all 0.18s;
+    background: var(--bg);
+    user-select: none;
+  }
+  .radio-btn.yes.selected { border-color: #4ba87c; background: #edf7f3; color: #2d7a58; }
+  .radio-btn.no.selected { border-color: #c84b4b; background: #fdeaea; color: #c84b4b; }
+  .radio-btn:not(.selected):hover { border-color: var(--accent); }
+
+  .form-section-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 20px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .btn-submit {
+    margin-top: 24px;
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .btn-submit:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: var(--shadow); }
+  .btn-submit:active { transform: none; }
+
+  /* SUCCESS TOAST */
+  .toast {
+    position: fixed;
+    bottom: 32px; right: 32px;
+    background: var(--text);
+    color: #faf8f4;
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    z-index: 999;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.35s cubic-bezier(.34,1.56,.64,1);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .toast.show { transform: none; opacity: 1; }
+
+  /* LIST VIEW */
+  .list-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px; gap: 16px; flex-wrap: wrap;
+  }
+  .list-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .list-title .count-badge {
+    background: var(--surface2);
+    color: var(--text2);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+
+  /* FILTERS */
+  .filter-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;
+  }
+  .filter-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 130px; }
+  .filter-group label { font-size: 0.75rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
+  .filter-group select,
+  .filter-group input {
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    padding: 7px 10px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.85rem;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .filter-group select:focus,
+  .filter-group input:focus { border-color: var(--accent); }
+  .btn-reset {
+    padding: 7px 16px;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.83rem;
+    color: var(--text2);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    align-self: flex-end;
+  }
+  .btn-reset:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* CARDS */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 18px;
+  }
+
+  .item-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: all 0.25s;
+    animation: fadeIn 0.35s ease;
+  }
+  .item-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--accent); }
+
+  .card-top {
+    background: var(--surface2);
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .card-icon {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+  .card-icon.restaurant { background: #fdeaea; }
+  .card-icon.hotel { background: #eaf0fd; }
+  .card-icon.attraction { background: #edf7f3; }
+  .card-icon.shopping { background: #f5eafd; }
+
+  .card-title-area { flex: 1; min-width: 0; }
+  .card-name {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+    word-break: break-word;
+  }
+  .card-type-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: 0.04em;
+  }
+  .badge-restaurant { background: #fdeaea; color: var(--tag-restaurant); }
+  .badge-hotel { background: #eaf0fd; color: var(--tag-hotel); }
+  .badge-attraction { background: #edf7f3; color: var(--tag-attraction); }
+  .badge-shopping { background: #f5eafd; color: var(--tag-shopping); }
+
+  .card-body { padding: 14px 18px; }
+  .card-row {
+    display: flex; align-items: baseline; gap: 8px;
+    margin-bottom: 7px; font-size: 0.85rem;
+  }
+  .card-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    min-width: 52px;
+  }
+  .card-value { color: var(--text); word-break: break-word; }
+  .card-desc {
+    color: var(--text2);
+    font-size: 0.83rem;
+    line-height: 1.6;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .card-tags {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px;
+  }
+  .card-tag {
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--surface2);
+    color: var(--text2);
+    font-weight: 500;
+  }
+  .tag-yes { background: #edf7f3; color: #2d7a58; }
+  .tag-no { background: #fdeaea; color: #c84b4b; }
+
+  .card-links {
+    padding: 10px 18px 14px;
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .card-link {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 0.78rem;
+    padding: 5px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.18s;
+  }
+  .link-maps {
+    background: #e8f1fd; color: #2563eb;
+    border: 1px solid #bdd1f7;
+  }
+  .link-maps:hover { background: #2563eb; color: white; }
+  .link-url {
+    background: var(--surface2); color: var(--text2);
+    border: 1px solid var(--border);
+  }
+  .link-url:hover { border-color: var(--accent); color: var(--accent); }
+
+  .card-footer {
+    padding: 8px 18px;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .card-date { font-size: 0.72rem; color: var(--text3); }
+  .btn-delete {
+    background: none; border: none; cursor: pointer;
+    font-size: 0.75rem; color: var(--text3);
+    padding: 3px 8px; border-radius: 5px;
+    transition: all 0.18s;
+  }
+  .btn-delete:hover { color: #c84b4b; background: #fdeaea; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center; padding: 64px 24px;
+    color: var(--text3);
+  }
+  .empty-icon { font-size: 3rem; margin-bottom: 14px; }
+  .empty-state p { font-size: 0.9rem; }
+
+  /* IMAGE UPLOAD */
+  .img-upload-area {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    background: var(--bg);
+    min-height: 100px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .img-upload-area:hover { border-color: var(--accent); background: #fdf3ea; }
+  .img-upload-placeholder {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    color: var(--text2); font-size: 0.85rem; pointer-events: none;
+  }
+  .img-preview-thumb {
+    max-width: 100%; max-height: 180px;
+    border-radius: 8px; object-fit: contain;
+    pointer-events: none;
+  }
+  .btn-img-clear {
+    margin-top: 8px;
+    background: #fdeaea; border: 1px solid #f5c0c0;
+    color: #c84b4b; border-radius: 6px;
+    padding: 4px 12px; font-size: 0.78rem;
+    font-family: 'Noto Sans TC', sans-serif;
+    cursor: pointer; transition: all 0.18s;
+  }
+  .btn-img-clear:hover { background: #c84b4b; color: white; }
+
+  /* CARD IMAGE THUMBNAIL */
+  .card-img-wrap {
+    width: 100%; overflow: hidden;
+    max-height: 180px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    cursor: zoom-in;
+  }
+  .card-img-wrap img {
+    width: 100%; height: 180px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  .card-img-wrap:hover img { transform: scale(1.04); }
+
+  /* LIGHTBOX */
+  .lightbox {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.82);
+    z-index: 9999;
+    align-items: center; justify-content: center;
+    animation: fadeIn 0.2s ease;
+  }
+  .lightbox.show { display: flex; }
+  .lightbox img {
+    max-width: 90vw; max-height: 88vh;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .lightbox-close {
+    position: absolute; top: 20px; right: 28px;
+    color: white; font-size: 2rem; cursor: pointer;
+    line-height: 1; opacity: 0.8;
+    transition: opacity 0.18s;
+  }
+  .lightbox-close:hover { opacity: 1; }
+
+  /* MENU MANAGEMENT */
+  .menu-mgmt-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media(max-width:600px) { .menu-mgmt-grid { grid-template-columns: 1fr; } }
+  .menu-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .menu-section-header {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .menu-section-header span:first-child {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1rem; font-weight: 600;
+  }
+  .menu-desc { font-size: 0.75rem; color: var(--text3); }
+  .menu-add-row {
+    display: flex; gap: 8px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .menu-input {
+    flex: 1;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.88rem;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .menu-input:focus { border-color: var(--accent); background: #fff; }
+  .btn-menu-add {
+    padding: 8px 16px;
+    background: var(--accent);
+    color: white; border: none;
+    border-radius: 8px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+    cursor: pointer; white-space: nowrap;
+    transition: background 0.18s;
+  }
+  .btn-menu-add:hover { background: var(--accent2); }
+  .menu-tag-list {
+    list-style: none;
+    padding: 12px 16px;
+    display: flex; flex-direction: column; gap: 8px;
+    min-height: 80px;
+  }
+  .menu-tag-item {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 14px;
+    font-size: 0.88rem;
+    animation: fadeIn 0.25s ease;
+  }
+  .menu-tag-item span { color: var(--text); }
+  .btn-tag-del {
+    background: none; border: none;
+    color: var(--text3); cursor: pointer;
+    font-size: 1rem; padding: 0 4px;
+    border-radius: 4px; transition: all 0.18s;
+    line-height: 1;
+  }
+  .btn-tag-del:hover { color: #c84b4b; background: #fdeaea; }
+  .menu-empty {
+    color: var(--text3); font-size: 0.82rem;
+    text-align: center; padding: 12px 0;
+  }
+
+  /* EDIT MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(42,32,24,0.45);
+    z-index: 500;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 48px 16px 32px;
+    overflow-y: auto;
+  }
+  .modal-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
+  .modal-box {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+    width: 100%; max-width: 640px;
+    padding: 28px 28px 24px;
+    position: relative;
+    animation: slideUp 0.25s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
+  .modal-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.1rem; font-weight: 600;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .modal-title::after { content:''; flex:1; height:1px; background:var(--border); }
+  .modal-close {
+    position: absolute; top: 16px; right: 18px;
+    background: none; border: none; font-size: 1.4rem;
+    color: var(--text3); cursor: pointer;
+    transition: color 0.18s;
+    line-height: 1;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-actions {
+    display: flex; gap: 10px; justify-content: flex-end;
+    margin-top: 20px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .btn-cancel {
+    padding: 9px 20px;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.9rem; font-weight: 600;
+    color: var(--text2); cursor: pointer;
+    transition: all 0.18s;
+  }
+  .btn-cancel:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-save {
+    padding: 9px 24px;
+    background: var(--accent);
+    border: none; border-radius: 8px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.9rem; font-weight: 700;
+    color: white; cursor: pointer;
+    transition: background 0.18s;
+  }
+  .btn-save:hover { background: var(--accent2); }
+
+  /* EDIT BUTTON on card */
+  .btn-edit {
+    background: none; border: none; cursor: pointer;
+    font-size: 0.75rem; color: var(--text3);
+    padding: 3px 8px; border-radius: 5px;
+    transition: all 0.18s;
+  }
+  .btn-edit:hover { color: var(--accent); background: #fdf3ea; }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    header { padding: 14px 16px; }
+    main { padding: 20px 12px; }
+    .tabs { padding: 0 8px; }
+    .tab { padding: 12px 14px; font-size: 0.82rem; }
+    .type-selector { grid-template-columns: repeat(2, 1fr); }
+    .field-grid { grid-template-columns: 1fr; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .form-card { padding: 20px 16px; }
+  }
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="app-header">
-    <div class="app-title">客戶維護管理系統</div>
-    <span class="app-badge">CRM</span>
-    <span id="sync-indicator" style="font-size:12px; color:#6b7280; margin-left:auto;"></span>
-  </div>
 
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('view')">檢視 / 報表</button>
-    <button class="tab" onclick="switchTab('input')">新增 / 編輯</button>
-    <button class="tab" onclick="switchTab('settings')">選單管理</button>
-    <button class="tab" onclick="switchTab('sync')">Google Sheet 設定</button>
+<header>
+  <div class="header-logo">📋</div>
+  <div>
+    <h1>推薦清單記錄</h1>
+    <div class="subtitle">My Recommendations</div>
   </div>
+  <div class="header-count" id="totalCount">共 <span>0</span> 筆推薦</div>
+  <div id="api-status" style="font-size:0.72rem;padding:3px 10px;border-radius:12px;background:var(--surface2);color:var(--text3);border:1px solid var(--border);display:none;"></div>
+</header>
 
-  <!-- 檢視頁面 -->
-  <div class="panel active" id="panel-view">
-    <div class="stat-grid" id="stat-grid"></div>
-    <div class="card">
-      <div class="search-bar">
-        <div class="form-group">
-          <label>搜尋客戶</label>
-          <input type="text" id="search-client" placeholder="輸入客戶名稱..." oninput="renderTable()">
+<div class="tabs">
+  <div class="tab active" data-tab="add">➕ 新增推薦</div>
+  <div class="tab" data-tab="restaurant">🍜 餐廳 <span class="tab-count" id="cnt-restaurant">0</span></div>
+  <div class="tab" data-tab="hotel">🏨 住宿 <span class="tab-count" id="cnt-hotel">0</span></div>
+  <div class="tab" data-tab="attraction">🗺️ 景點 <span class="tab-count" id="cnt-attraction">0</span></div>
+  <div class="tab" data-tab="shopping">🛍️ 購物 <span class="tab-count" id="cnt-shopping">0</span></div>
+  <div class="tab" data-tab="menu">⚙️ 選單管理</div>
+</div>
+
+<main>
+  <!-- ADD PANEL -->
+  <div class="panel active" id="panel-add">
+    <div class="form-card">
+      <h2>新增推薦</h2>
+
+      <div class="type-selector">
+        <div class="type-btn" data-type="restaurant">
+          <span class="type-icon">🍜</span>餐廳
         </div>
-        <div class="form-group">
-          <label>日期起</label>
-          <input type="date" id="search-date-from" onchange="renderTable()">
+        <div class="type-btn" data-type="hotel">
+          <span class="type-icon">🏨</span>住宿
         </div>
-        <div class="form-group">
-          <label>日期迄</label>
-          <input type="date" id="search-date-to" onchange="renderTable()">
+        <div class="type-btn" data-type="attraction">
+          <span class="type-icon">🗺️</span>景點
         </div>
-        <div class="form-group">
-          <label>狀態</label>
-          <select id="search-status" onchange="renderTable()">
-            <option value="">全部</option>
-          </select>
-        </div>
-        <div class="form-group" style="justify-content:flex-end;">
-          <label>&nbsp;</label>
-          <button class="btn" onclick="clearSearch()">清除篩選</button>
+        <div class="type-btn" data-type="shopping">
+          <span class="type-icon">🛍️</span>購物
         </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>客戶</th><th>產品別</th><th>產品</th><th>業務</th><th>工程師</th>
-              <th>維護期間</th><th>進度</th><th>狀態</th><th>操作</th><th>連結</th>
-            </tr>
-          </thead>
-          <tbody id="data-table-body"></tbody>
-        </table>
-        <div id="empty-state" class="empty-state" style="display:none;">尚無資料，請至「新增 / 編輯」頁面新增客戶資料</div>
+
+      <!-- RESTAURANT -->
+      <div class="form-fields" id="fields-restaurant">
+        <div class="field-grid">
+          <div class="field-group full">
+            <label>名稱 <span class="required">*</span></label>
+            <input type="text" id="r-name" placeholder="餐廳名稱">
+          </div>
+          <div class="field-group">
+            <label>地區</label>
+            <input type="text" id="r-region" placeholder="選擇或輸入地區" list="dl-region" autocomplete="off">
+          </div>
+          <div class="field-group">
+            <label>Google Maps 網址</label>
+            <input type="url" id="r-maps" placeholder="貼上 Google Maps 連結">
+          </div>
+          <div class="field-group full">
+            <label>推薦網址</label>
+            <input type="url" id="r-url" placeholder="部落格、IG 等連結">
+          </div>
+          <div class="field-group full">
+            <label>描述</label>
+            <textarea id="r-desc" placeholder="推薦原因、必點餐點、注意事項…"></textarea>
+          </div>
+        </div>
       </div>
+
+      <!-- HOTEL -->
+      <div class="form-fields" id="fields-hotel">
+        <div class="field-grid">
+          <div class="field-group full">
+            <label>名稱 <span class="required">*</span></label>
+            <input type="text" id="h-name" placeholder="住宿名稱">
+          </div>
+          <div class="field-group">
+            <label>地區</label>
+            <input type="text" id="h-region" placeholder="選擇或輸入地區" list="dl-region" autocomplete="off">
+          </div>
+          <div class="field-group">
+            <label>Google Maps 網址</label>
+            <input type="url" id="h-maps" placeholder="貼上 Google Maps 連結">
+          </div>
+          <div class="field-group full">
+            <label>推薦網址</label>
+            <input type="url" id="h-url" placeholder="訂房連結、部落格等">
+          </div>
+          <div class="field-group full">
+            <label>描述</label>
+            <textarea id="h-desc" placeholder="推薦原因、房型、特色…"></textarea>
+          </div>
+        </div>
+        <div class="form-section-title">設施資訊</div>
+        <div class="field-grid">
+          <div class="field-group">
+            <label>泳池</label>
+            <div class="radio-group">
+              <div class="radio-btn yes" data-field="h-pool" data-val="是">✓ 有</div>
+              <div class="radio-btn no" data-field="h-pool" data-val="否">✗ 無</div>
+            </div>
+            <input type="hidden" id="h-pool" value="">
+          </div>
+          <div class="field-group">
+            <label>親子設施</label>
+            <div class="radio-group">
+              <div class="radio-btn yes" data-field="h-kids" data-val="是">✓ 有</div>
+              <div class="radio-btn no" data-field="h-kids" data-val="否">✗ 無</div>
+            </div>
+            <input type="hidden" id="h-kids" value="">
+          </div>
+          <div class="field-group">
+            <label>停車</label>
+            <div class="radio-group">
+              <div class="radio-btn yes" data-field="h-park" data-val="是">✓ 有</div>
+              <div class="radio-btn no" data-field="h-park" data-val="否">✗ 無</div>
+            </div>
+            <input type="hidden" id="h-park" value="">
+          </div>
+        </div>
+      </div>
+
+      <!-- ATTRACTION -->
+      <div class="form-fields" id="fields-attraction">
+        <div class="field-grid">
+          <div class="field-group full">
+            <label>店名/景點名稱 <span class="required">*</span></label>
+            <input type="text" id="a-name" placeholder="景點名稱">
+          </div>
+          <div class="field-group">
+            <label>地區</label>
+            <input type="text" id="a-region" placeholder="選擇或輸入地區" list="dl-region" autocomplete="off">
+          </div>
+          <div class="field-group">
+            <label>Google Maps 網址</label>
+            <input type="url" id="a-maps" placeholder="貼上 Google Maps 連結">
+          </div>
+          <div class="field-group full">
+            <label>推薦網址</label>
+            <input type="url" id="a-url" placeholder="相關連結">
+          </div>
+          <div class="field-group full">
+            <label>描述</label>
+            <textarea id="a-desc" placeholder="推薦原因、注意事項、開放時間…"></textarea>
+          </div>
+        </div>
+        <div class="form-section-title">停車資訊</div>
+        <div class="field-grid">
+          <div class="field-group">
+            <label>停車</label>
+            <div class="radio-group">
+              <div class="radio-btn yes" data-field="a-park" data-val="是">✓ 有</div>
+              <div class="radio-btn no" data-field="a-park" data-val="否">✗ 無</div>
+            </div>
+            <input type="hidden" id="a-park" value="">
+          </div>
+        </div>
+      </div>
+
+      <!-- SHOPPING -->
+      <div class="form-fields" id="fields-shopping">
+        <div class="field-grid">
+          <div class="field-group full">
+            <label>品項 <span class="required">*</span></label>
+            <input type="text" id="s-name" placeholder="商品名稱">
+          </div>
+          <div class="field-group">
+            <label>在哪買</label>
+            <input type="text" id="s-where" placeholder="選擇或輸入通路" list="dl-where" autocomplete="off">
+          </div>
+          <div class="field-group">
+            <label>價格</label>
+            <input type="text" id="s-price" placeholder="例：NT$299">
+          </div>
+          <div class="field-group full">
+            <label>推薦網址</label>
+            <input type="url" id="s-url" placeholder="商品連結">
+          </div>
+          <div class="field-group full">
+            <label>描述</label>
+            <textarea id="s-desc" placeholder="推薦原因、使用心得…"></textarea>
+          </div>
+          <div class="field-group full">
+            <label>商品圖片</label>
+            <div class="img-upload-area" id="s-img-area" onclick="document.getElementById('s-img-input').click()">
+              <div class="img-upload-placeholder" id="s-img-placeholder">
+                <span style="font-size:2rem">📷</span>
+                <span>點擊上傳圖片</span>
+                <span style="font-size:0.75rem;color:var(--text3)">支援 JPG、PNG、WEBP</span>
+              </div>
+              <img id="s-img-preview" class="img-preview-thumb" style="display:none">
+            </div>
+            <input type="file" id="s-img-input" accept="image/*" style="display:none" onchange="handleImgUpload(this)">
+            <button type="button" id="s-img-clear" class="btn-img-clear" style="display:none" onclick="clearImg()">✕ 移除圖片</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-submit" id="btnSubmit" onclick="submitForm()">＋ 新增推薦</button>
     </div>
   </div>
 
-  <!-- 新增/編輯頁面 -->
-  <div class="panel" id="panel-input">
-    <div class="card">
-      <div class="section-title" id="form-mode-label">新增資料</div>
-      <div class="form-grid form-grid-3">
-        <div class="form-group">
-          <label>客戶名稱 *</label>
-          <input type="text" id="f-client" placeholder="請輸入客戶名稱">
-        </div>
-        <div class="form-group">
-          <label>產品別 *</label>
-          <select id="f-category"></select>
-        </div>
-        <div class="form-group">
-          <label>產品 *</label>
-          <select id="f-product"></select>
-        </div>
-        <div class="form-group">
-          <label>業務</label>
-          <select id="f-biz"></select>
-        </div>
-        <div class="form-group">
-          <label>工程師</label>
-          <select id="f-engineer"></select>
-        </div>
-        <div class="form-group">
-          <label>狀態</label>
-          <select id="f-status"></select>
-        </div>
-        <div class="form-group">
-          <label>維護開始日期</label>
-          <input type="date" id="f-date-start">
-        </div>
-        <div class="form-group">
-          <label>維護結束日期</label>
-          <input type="date" id="f-date-end">
-        </div>
-        <div class="form-group">
-          <label>進度 (%)</label>
-          <input type="number" id="f-progress" min="0" max="100" placeholder="0~100" value="0">
-        </div>
-        <div class="form-group full">
-          <label>相關資訊連結</label>
-          <input type="url" id="f-link" placeholder="https://...">
-        </div>
+  <!-- RESTAURANT PANEL -->
+  <div class="panel" id="panel-restaurant">
+    <div class="list-header">
+      <div class="list-title">🍜 餐廳 <span class="count-badge" id="r-badge">0</span></div>
+    </div>
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>搜尋名稱</label>
+        <input type="text" id="rf-name" placeholder="輸入名稱關鍵字" oninput="renderList('restaurant')">
       </div>
-      <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <button class="btn primary" onclick="saveRecord()">儲存資料</button>
-        <button class="btn" onclick="clearForm()">清除表單</button>
-        <button class="btn danger" id="btn-delete" style="display:none;" onclick="deleteRecord()">刪除此筆</button>
+      <div class="filter-group">
+        <label>地區</label>
+        <select id="rf-region" onchange="renderList('restaurant')">
+          <option value="">全部地區</option>
+        </select>
+      </div>
+      <button class="btn-reset" onclick="resetFilters('restaurant')">↺ 重設</button>
+    </div>
+    <div class="cards-grid" id="list-restaurant"></div>
+  </div>
+
+  <!-- HOTEL PANEL -->
+  <div class="panel" id="panel-hotel">
+    <div class="list-header">
+      <div class="list-title">🏨 住宿 <span class="count-badge" id="h-badge">0</span></div>
+    </div>
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>搜尋名稱</label>
+        <input type="text" id="hf-name" placeholder="輸入名稱關鍵字" oninput="renderList('hotel')">
+      </div>
+      <div class="filter-group">
+        <label>地區</label>
+        <select id="hf-region" onchange="renderList('hotel')">
+          <option value="">全部地區</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>泳池</label>
+        <select id="hf-pool" onchange="renderList('hotel')">
+          <option value="">不限</option>
+          <option value="是">有泳池</option>
+          <option value="否">無泳池</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>親子設施</label>
+        <select id="hf-kids" onchange="renderList('hotel')">
+          <option value="">不限</option>
+          <option value="是">有親子設施</option>
+          <option value="否">無親子設施</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>停車</label>
+        <select id="hf-park" onchange="renderList('hotel')">
+          <option value="">不限</option>
+          <option value="是">有停車</option>
+          <option value="否">無停車</option>
+        </select>
+      </div>
+      <button class="btn-reset" onclick="resetFilters('hotel')">↺ 重設</button>
+    </div>
+    <div class="cards-grid" id="list-hotel"></div>
+  </div>
+
+  <!-- ATTRACTION PANEL -->
+  <div class="panel" id="panel-attraction">
+    <div class="list-header">
+      <div class="list-title">🗺️ 景點 <span class="count-badge" id="a-badge">0</span></div>
+    </div>
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>搜尋名稱</label>
+        <input type="text" id="af-name" placeholder="輸入名稱關鍵字" oninput="renderList('attraction')">
+      </div>
+      <div class="filter-group">
+        <label>地區</label>
+        <select id="af-region" onchange="renderList('attraction')">
+          <option value="">全部地區</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>停車</label>
+        <select id="af-park" onchange="renderList('attraction')">
+          <option value="">不限</option>
+          <option value="是">有停車</option>
+          <option value="否">無停車</option>
+        </select>
+      </div>
+      <button class="btn-reset" onclick="resetFilters('attraction')">↺ 重設</button>
+    </div>
+    <div class="cards-grid" id="list-attraction"></div>
+  </div>
+
+  <!-- SHOPPING PANEL -->
+  <div class="panel" id="panel-shopping">
+    <div class="list-header">
+      <div class="list-title">🛍️ 購物 <span class="count-badge" id="s-badge">0</span></div>
+    </div>
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>搜尋品項</label>
+        <input type="text" id="sf-name" placeholder="輸入品項關鍵字" oninput="renderList('shopping')">
+      </div>
+      <div class="filter-group">
+        <label>購買地點</label>
+        <select id="sf-where" onchange="renderList('shopping')">
+          <option value="">全部通路</option>
+        </select>
+      </div>
+      <button class="btn-reset" onclick="resetFilters('shopping')">↺ 重設</button>
+    </div>
+    <div class="cards-grid" id="list-shopping"></div>
+  </div>
+  <!-- MENU MANAGEMENT PANEL -->
+  <div class="panel" id="panel-menu">
+    <div class="menu-mgmt-grid">
+      <!-- 地區管理 -->
+      <div class="menu-section">
+        <div class="menu-section-header">
+          <span>📍 地區選項</span>
+          <span class="menu-desc">餐廳、住宿、景點的地區下拉清單</span>
+        </div>
+        <div class="menu-add-row">
+          <input type="text" id="new-region" placeholder="輸入新地區名稱" class="menu-input" onkeydown="if(event.key==='Enter')addMenuOption('region')">
+          <button class="btn-menu-add" onclick="addMenuOption('region')">＋ 新增</button>
+        </div>
+        <ul class="menu-tag-list" id="list-region"></ul>
+      </div>
+
+      <!-- 在哪買管理 -->
+      <div class="menu-section">
+        <div class="menu-section-header">
+          <span>🛒 在哪買選項</span>
+          <span class="menu-desc">購物品項的通路下拉清單</span>
+        </div>
+        <div class="menu-add-row">
+          <input type="text" id="new-where" placeholder="輸入新通路名稱" class="menu-input" onkeydown="if(event.key==='Enter')addMenuOption('where')">
+          <button class="btn-menu-add" onclick="addMenuOption('where')">＋ 新增</button>
+        </div>
+        <ul class="menu-tag-list" id="list-where"></ul>
       </div>
     </div>
   </div>
+</main>
 
-  <!-- 選單管理 -->
-  <div class="panel" id="panel-settings">
-    <div class="settings-grid" id="settings-container"></div>
-  </div>
+<!-- DATALISTS -->
+<datalist id="dl-region"></datalist>
+<datalist id="dl-where"></datalist>
 
-  <!-- Google Sheet 設定 -->
-  <div class="panel" id="panel-sync">
-    <div class="card">
-      <div class="section-title">Google Sheets 整合設定</div>
-      <p style="font-size:13px; color:#6b7280; margin-bottom:1rem; line-height:1.6;">
-        透過 Google Apps Script 讓資料自動儲存至 Google Sheets。請依照下方步驟設定。
-      </p>
-      <div class="form-group" style="margin-bottom:12px;">
-        <label>Apps Script Web App URL</label>
-        <input type="url" id="sheet-url" placeholder="https://script.google.com/macros/s/YOUR_ID/exec" value="">
-      </div>
-      <div style="display:flex; gap:8px; margin-bottom:1rem;">
-        <button class="btn primary" onclick="saveSheetUrl()">儲存設定</button>
-        <button class="btn sync-btn" onclick="syncToSheet()">立即同步至 Sheet</button>
-        <button class="btn sync-btn" onclick="loadFromSheet()">從 Sheet 載入</button>
-      </div>
-      <div id="sync-log" style="font-size:12px; color:#6b7280; min-height:20px;"></div>
-    </div>
+<div class="toast" id="toast">✅ 新增成功！</div>
 
-    <div class="card">
-      <div class="section-title">設定步驟教學</div>
-      <ol style="font-size:13px; line-height:2; color:#374151; padding-left:1.2rem;">
-        <li>前往 <strong>Google Sheets</strong> 建立新試算表，命名為「客戶維護管理」</li>
-        <li>點選選單「擴充功能」→「Apps Script」，開啟編輯器</li>
-        <li>將下方的 Apps Script 程式碼貼入並儲存</li>
-        <li>點選「部署」→「新增部署」→ 類型選「網頁應用程式」</li>
-        <li>執行身分選「我」，存取權選「所有人」，點「部署」</li>
-        <li>複製產生的 URL 貼到上方輸入框</li>
-      </ol>
-    </div>
-
-    <div class="card">
-      <div class="section-title">Apps Script 程式碼（複製貼到 Google Apps Script）</div>
-      <pre id="gas-code" style="background:#f8fafc; border:1px solid #e5e7eb; border-radius:8px; padding:1rem; font-size:11px; overflow-x:auto; line-height:1.6; color:#1a1a2e; white-space:pre-wrap;"></pre>
-      <button class="btn" style="margin-top:8px;" onclick="copyGasCode()">複製程式碼</button>
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeEditModal()">✕</button>
+    <div class="modal-title" id="editModalTitle">✏️ 編輯</div>
+    <div id="editModalBody"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeEditModal()">取消</button>
+      <button class="btn-save" onclick="saveEdit()">💾 儲存</button>
     </div>
   </div>
 </div>
-
-<!-- 操作 Modal -->
-<div class="modal-overlay" id="op-modal">
-  <div class="modal">
-    <div class="modal-title">執行操作記錄</div>
-    <div class="form-group" style="margin-bottom:10px;">
-      <label>執行工程師</label>
-      <select id="op-engineer"></select>
-    </div>
-    <div class="form-group" style="margin-bottom:10px;">
-      <label>執行時間</label>
-      <input type="datetime-local" id="op-time">
-    </div>
-    <div class="form-group" style="margin-bottom:10px;">
-      <label>切換狀態至</label>
-      <select id="op-status"></select>
-    </div>
-    <div class="form-group" style="margin-bottom:10px;">
-      <label>進度 (%)</label>
-      <input type="number" id="op-progress" min="0" max="100" value="100">
-    </div>
-    <div class="form-group" style="margin-bottom:10px;">
-      <label>備註說明</label>
-      <textarea id="op-note" rows="2" placeholder="備註說明..."></textarea>
-    </div>
-    <div id="op-log-area"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal()">取消</button>
-      <button class="btn primary" onclick="confirmOp()">確認記錄</button>
-    </div>
-  </div>
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <span class="lightbox-close" onclick="closeLightbox()">✕</span>
+  <img id="lightbox-img" src="" alt="商品圖片">
 </div>
 
 <script>
-// ========== 資料 ==========
-let opts = {
-  category: ['硬體','軟體','網路','雲端','其他'],
-  product: ['防火牆','伺服器','NAS','ERP','CRM','AP系統','交換器','路由器'],
-  biz: ['王大明','李美華','陳志偉','林怡君'],
-  engineer: ['張建國','劉雅婷','黃信宏','吳佳穎','鄭凱文'],
-  status: ['待處理','進行中','已完成','暫停']
+// ═══════════════════════════════════════════════════
+//  ⚙️  請將下方網址換成你自己的 Apps Script 部署網址
+// ═══════════════════════════════════════════════════
+const API_URL = 'https://script.google.com/macros/s/AKfycbyQ-fqfuIUMNg2rDoDV8z6lhhzZO71FMnd5-5rBVaT-aLtqYS9hXFv5qlVsKsWrfgpK/exec';
+// ═══════════════════════════════════════════════════
+
+const MENU_KEY = 'rec_menu_v1';
+let data = [];
+let menuData = JSON.parse(localStorage.getItem(MENU_KEY) || '{"region":[],"where":[]}');
+let currentImgBase64 = null;
+let editingId = null;
+
+// ───── API 層 ─────
+async function apiFetch(payload) {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(payload),
+  });
+  // no-cors 不回傳 body，樂觀更新即可
+  return { ok: true };
+}
+
+async function apiLoad() {
+  const res = await fetch(API_URL + '?t=' + Date.now());
+  return res.json();
+}
+
+function save() {}
+function saveMenu() { localStorage.setItem(MENU_KEY, JSON.stringify(menuData)); }
+
+function syncUI() {
+  updateCounts();
+  const activeType = document.querySelector('.tab.active')?.dataset.tab;
+  if (activeType && activeType !== 'add' && activeType !== 'menu') renderList(activeType);
+}
+
+function setApiStatus(msg, ok) {
+  const el = document.getElementById('api-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = msg ? 'inline-block' : 'none';
+  el.style.color = ok ? 'var(--tag-attraction)' : 'var(--tag-restaurant)';
+  el.style.borderColor = ok ? '#b8d4c0' : '#f5c0c0';
+  el.style.background = ok ? '#eef6f1' : '#fdeaea';
+}
+
+// ───── IMAGE UPLOAD ─────
+function handleImgUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    currentImgBase64 = e.target.result;
+    document.getElementById('s-img-preview').src = currentImgBase64;
+    document.getElementById('s-img-preview').style.display = 'block';
+    document.getElementById('s-img-placeholder').style.display = 'none';
+    document.getElementById('s-img-clear').style.display = 'inline-block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearImg() {
+  currentImgBase64 = null;
+  document.getElementById('s-img-input').value = '';
+  document.getElementById('s-img-preview').style.display = 'none';
+  document.getElementById('s-img-preview').src = '';
+  document.getElementById('s-img-placeholder').style.display = 'flex';
+  document.getElementById('s-img-clear').style.display = 'none';
+}
+
+// ───── LIGHTBOX ─────
+function openLightbox(src) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('show');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('show');
+}
+
+// ───── MENU MANAGEMENT ─────
+function renderMenuPanel() {
+  ['region','where'].forEach(key => {
+    const ul = document.getElementById('list-' + key);
+    const items = menuData[key];
+    if (items.length === 0) {
+      ul.innerHTML = '<li class="menu-empty">尚無選項，請新增</li>';
+    } else {
+      ul.innerHTML = items.map((v,i) => `
+        <li class="menu-tag-item">
+          <span>${esc(v)}</span>
+          <button class="btn-tag-del" onclick="deleteMenuOption('${key}',${i})" title="刪除">✕</button>
+        </li>`).join('');
+    }
+  });
+  updateDatalist();
+}
+
+function updateDatalist() {
+  document.getElementById('dl-region').innerHTML =
+    menuData.region.map(v => `<option value="${esc(v)}">`).join('');
+  document.getElementById('dl-where').innerHTML =
+    menuData.where.map(v => `<option value="${esc(v)}">`).join('');
+}
+
+function addMenuOption(key) {
+  const inputId = key === 'region' ? 'new-region' : 'new-where';
+  const val = document.getElementById(inputId).value.trim();
+  if (!val) { showToast('請輸入名稱', '⚠️'); return; }
+  if (menuData[key].includes(val)) { showToast('已有相同選項', '⚠️'); return; }
+  menuData[key].push(val);
+  saveMenu();
+  document.getElementById(inputId).value = '';
+  renderMenuPanel();
+  showToast('選項已新增', '✅');
+  // 同步選單到 Sheets
+  apiFetch({ action: 'saveMenu', menuData });
+}
+
+function deleteMenuOption(key, idx) {
+  if (!confirm(`確定刪除「${menuData[key][idx]}」？`)) return;
+  menuData[key].splice(idx, 1);
+  saveMenu();
+  renderMenuPanel();
+  apiFetch({ action: 'saveMenu', menuData });
+}
+
+// ───── TABS ─────
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('panel-' + t.dataset.tab).classList.add('active');
+    if (t.dataset.tab === 'menu') {
+      renderMenuPanel();
+    } else if (t.dataset.tab !== 'add') {
+      renderList(t.dataset.tab);
+    }
+  });
+});
+
+// ───── TYPE SELECTOR ─────
+let currentType = null;
+document.querySelectorAll('.type-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.form-fields').forEach(f => f.classList.remove('visible'));
+    btn.classList.add('active');
+    currentType = btn.dataset.type;
+    document.getElementById('fields-' + currentType).classList.add('visible');
+  });
+});
+
+// ───── RADIO BUTTONS ─────
+document.querySelectorAll('.radio-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const field = btn.dataset.field;
+    const val = btn.dataset.val;
+    document.querySelectorAll(`.radio-btn[data-field="${field}"]`).forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById(field).value = val;
+  });
+});
+
+// ───── SUBMIT ─────
+function submitForm() {
+  if (!currentType) { showToast('請先選擇類別！', '⚠️'); return; }
+
+  let item = { id: Date.now(), type: currentType, date: new Date().toLocaleDateString('zh-TW') };
+
+  if (currentType === 'restaurant') {
+    const name = document.getElementById('r-name').value.trim();
+    if (!name) { showToast('請輸入餐廳名稱', '⚠️'); return; }
+    item = { ...item, name, region: document.getElementById('r-region').value.trim(),
+      maps: document.getElementById('r-maps').value.trim(),
+      url: document.getElementById('r-url').value.trim(),
+      desc: document.getElementById('r-desc').value.trim() };
+  } else if (currentType === 'hotel') {
+    const name = document.getElementById('h-name').value.trim();
+    if (!name) { showToast('請輸入住宿名稱', '⚠️'); return; }
+    item = { ...item, name, region: document.getElementById('h-region').value.trim(),
+      maps: document.getElementById('h-maps').value.trim(),
+      url: document.getElementById('h-url').value.trim(),
+      desc: document.getElementById('h-desc').value.trim(),
+      pool: document.getElementById('h-pool').value,
+      kids: document.getElementById('h-kids').value,
+      park: document.getElementById('h-park').value };
+  } else if (currentType === 'attraction') {
+    const name = document.getElementById('a-name').value.trim();
+    if (!name) { showToast('請輸入景點名稱', '⚠️'); return; }
+    item = { ...item, name, region: document.getElementById('a-region').value.trim(),
+      maps: document.getElementById('a-maps').value.trim(),
+      url: document.getElementById('a-url').value.trim(),
+      desc: document.getElementById('a-desc').value.trim(),
+      park: document.getElementById('a-park').value };
+  } else if (currentType === 'shopping') {
+    const name = document.getElementById('s-name').value.trim();
+    if (!name) { showToast('請輸入品項名稱', '⚠️'); return; }
+    item = { ...item, name, where: document.getElementById('s-where').value.trim(),
+      price: document.getElementById('s-price').value.trim(),
+      url: document.getElementById('s-url').value.trim(),
+      desc: document.getElementById('s-desc').value.trim(),
+      img: currentImgBase64 || null };
+  }
+
+  setBtnLoading(true);
+  data.push(item);           // 樂觀更新：先顯示
+  syncUI();
+  resetForm();
+  showToast('儲存中…', '⏳');
+  apiFetch({ action: 'add', item })
+    .then(() => showToast('推薦新增成功！', '✅'))
+    .catch(() => {
+      data.pop();
+      syncUI();
+      showToast('儲存失敗，請檢查 API 設定', '❌');
+    })
+    .finally(() => setBtnLoading(false));
+}
+
+function resetForm() {
+  document.querySelectorAll('.form-fields input, .form-fields textarea').forEach(el => el.value = '');
+  document.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.form-fields').forEach(f => f.classList.remove('visible'));
+  clearImg();
+  currentType = null;
+}
+
+// ───── COUNTS ─────
+function updateCounts() {
+  const types = ['restaurant','hotel','attraction','shopping'];
+  let total = 0;
+  types.forEach(t => {
+    const n = data.filter(d => d.type === t).length;
+    document.getElementById('cnt-' + t).textContent = n;
+    total += n;
+  });
+  document.querySelector('#totalCount span').textContent = total;
+}
+
+// ───── RENDER LIST ─────
+const typeConfig = {
+  restaurant: { icon: '🍜', label: '餐廳', badge: 'badge-restaurant' },
+  hotel: { icon: '🏨', label: '住宿', badge: 'badge-hotel' },
+  attraction: { icon: '🗺️', label: '景點', badge: 'badge-attraction' },
+  shopping: { icon: '🛍️', label: '購物', badge: 'badge-shopping' },
 };
 
-let records = [
-  { id:1, client:'台積電', category:'硬體', product:'伺服器', biz:'王大明', engineer:'張建國', dateStart:'2025-01-01', dateEnd:'2025-12-31', progress:60, status:'進行中', link:'https://example.com', ops:[] },
-  { id:2, client:'鴻海精密', category:'軟體', product:'ERP', biz:'李美華', engineer:'劉雅婷', dateStart:'2025-03-01', dateEnd:'2025-08-31', progress:30, status:'待處理', link:'', ops:[] },
-  { id:3, client:'聯發科', category:'網路', product:'防火牆', biz:'陳志偉', engineer:'黃信宏', dateStart:'2024-07-01', dateEnd:'2025-06-30', progress:100, status:'已完成', link:'https://example.com/mtk', ops:[] }
-];
-let nextId = 4;
-let editingId = null;
-let opTargetId = null;
+function renderList(type) {
+  const container = document.getElementById('list-' + type);
 
-// ========== localStorage ==========
-function save() {
-  localStorage.setItem('crm_records', JSON.stringify(records));
-  localStorage.setItem('crm_opts', JSON.stringify(opts));
-  localStorage.setItem('crm_nextId', nextId);
-}
-function load() {
-  const r = localStorage.getItem('crm_records');
-  const o = localStorage.getItem('crm_opts');
-  const n = localStorage.getItem('crm_nextId');
-  if(r) records = JSON.parse(r);
-  if(o) opts = JSON.parse(o);
-  if(n) nextId = parseInt(n);
-}
+  let items = data.filter(d => d.type === type);
 
-// ========== 頁籤 ==========
-function switchTab(t) {
-  const names = ['view','input','settings','sync'];
-  document.querySelectorAll('.tab').forEach((el,i) => el.classList.toggle('active', names[i]===t));
-  document.querySelectorAll('.panel').forEach((el,i) => el.classList.toggle('active', 'panel-'+names[i]==='panel-'+t));
-  if(t==='view'){ renderStats(); renderTable(); populateSearchStatus(); }
-  if(t==='input'){ populateFormSelects(); }
-  if(t==='settings'){ renderSettings(); }
-  if(t==='sync'){ renderGasCode(); loadSheetUrl(); }
-}
+  if (type === 'restaurant') {
+    const name = document.getElementById('rf-name').value.toLowerCase();
+    const region = document.getElementById('rf-region').value;
+    if (name) items = items.filter(i => i.name.toLowerCase().includes(name));
+    if (region) items = items.filter(i => i.region === region);
+    updateRegionFilter('rf-region', type);
+  } else if (type === 'hotel') {
+    const name = document.getElementById('hf-name').value.toLowerCase();
+    const region = document.getElementById('hf-region').value;
+    const pool = document.getElementById('hf-pool').value;
+    const kids = document.getElementById('hf-kids').value;
+    const park = document.getElementById('hf-park').value;
+    if (name) items = items.filter(i => i.name.toLowerCase().includes(name));
+    if (region) items = items.filter(i => i.region === region);
+    if (pool) items = items.filter(i => i.pool === pool);
+    if (kids) items = items.filter(i => i.kids === kids);
+    if (park) items = items.filter(i => i.park === park);
+    updateRegionFilter('hf-region', type);
+  } else if (type === 'attraction') {
+    const name = document.getElementById('af-name').value.toLowerCase();
+    const region = document.getElementById('af-region').value;
+    const park = document.getElementById('af-park').value;
+    if (name) items = items.filter(i => i.name.toLowerCase().includes(name));
+    if (region) items = items.filter(i => i.region === region);
+    if (park) items = items.filter(i => i.park === park);
+    updateRegionFilter('af-region', type);
+  } else if (type === 'shopping') {
+    const name = document.getElementById('sf-name').value.toLowerCase();
+    const where = document.getElementById('sf-where').value;
+    if (name) items = items.filter(i => i.name.toLowerCase().includes(name));
+    if (where) items = items.filter(i => i.where === where);
+    updateWhereFilter('sf-where', type);
+  }
 
-// ========== 統計 ==========
-function renderStats() {
-  const pending = records.filter(r=>r.status==='待處理').length;
-  const processing = records.filter(r=>r.status==='進行中').length;
-  const done = records.filter(r=>r.status==='已完成').length;
-  document.getElementById('stat-grid').innerHTML = `
-    <div class="stat-card"><div class="stat-label">全部案件</div><div class="stat-val gray">${records.length}</div></div>
-    <div class="stat-card"><div class="stat-label">待處理</div><div class="stat-val amber">${pending}</div></div>
-    <div class="stat-card"><div class="stat-label">進行中</div><div class="stat-val blue">${processing}</div></div>
-    <div class="stat-card"><div class="stat-label">已完成</div><div class="stat-val green">${done}</div></div>
-  `;
-}
+  const badgeEl = document.querySelector(`#panel-${type} .count-badge`);
+  if (badgeEl) badgeEl.textContent = items.length;
 
-// ========== 搜尋篩選 ==========
-function getFiltered() {
-  const sc = (document.getElementById('search-client').value||'').toLowerCase();
-  const sf = document.getElementById('search-date-from').value;
-  const st = document.getElementById('search-date-to').value;
-  const ss = document.getElementById('search-status').value;
-  return records.filter(r => {
-    if(sc && !r.client.toLowerCase().includes(sc)) return false;
-    if(ss && r.status!==ss) return false;
-    if(sf && r.dateEnd < sf) return false;
-    if(st && r.dateStart > st) return false;
-    return true;
-  });
-}
-function clearSearch() {
-  ['search-client','search-date-from','search-date-to','search-status'].forEach(id => { document.getElementById(id).value=''; });
-  renderTable();
+  if (items.length === 0) {
+    container.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-icon">📭</div>
+      <p>目前沒有符合條件的推薦<br>快去新增第一筆吧！</p>
+    </div>`;
+    return;
+  }
+
+  container.innerHTML = items.map(item => buildCard(item)).join('');
 }
 
-// ========== 表格 ==========
-function statusBadge(s) {
-  const map = {'待處理':'pending','進行中':'processing','已完成':'done','暫停':'paused'};
-  return `<span class="badge ${map[s]||''}">${s}</span>`;
-}
-function renderTable() {
-  const filtered = getFiltered();
-  const tbody = document.getElementById('data-table-body');
-  const empty = document.getElementById('empty-state');
-  if(!filtered.length){ tbody.innerHTML=''; empty.style.display='block'; return; }
-  empty.style.display='none';
-  tbody.innerHTML = filtered.map(r=>`
-    <tr>
-      <td><span class="ellipsis" title="${r.client}">${r.client}</span></td>
-      <td>${r.category}</td>
-      <td><span class="ellipsis" title="${r.product}">${r.product}</span></td>
-      <td>${r.biz}</td>
-      <td>${r.engineer}</td>
-      <td style="font-size:11px; line-height:1.6;">${r.dateStart||'-'}<br>${r.dateEnd||'-'}</td>
-      <td style="min-width:80px;">
-        <span style="font-size:11px;">${r.progress}%</span>
-        <div class="progress-bar"><div class="progress-fill" style="width:${r.progress}%"></div></div>
-      </td>
-      <td>${statusBadge(r.status)}</td>
-      <td>
-        <div style="display:flex; gap:4px; flex-wrap:wrap;">
-          <button class="btn small success-btn" onclick="openOpModal(${r.id})">執行</button>
-          <button class="btn small" onclick="editRecord(${r.id})">編輯</button>
-        </div>
-      </td>
-      <td>${r.link?`<button class="link-btn" onclick="window.open('${r.link}','_blank')">開啟</button>`:'-'}</td>
-    </tr>
-  `).join('');
-  renderStats();
-}
-function populateSearchStatus() {
-  const sel = document.getElementById('search-status');
-  const cur = sel.value;
-  sel.innerHTML = '<option value="">全部</option>' + opts.status.map(s=>`<option value="${s}">${s}</option>`).join('');
-  sel.value = cur;
-}
+function buildCard(item) {
+  const cfg = typeConfig[item.type];
+  let rows = '';
+  let tags = '';
 
-// ========== 表單 ==========
-function populateFormSelects() {
-  const map = {category:'f-category', product:'f-product', biz:'f-biz', engineer:'f-engineer', status:'f-status'};
-  Object.entries(map).forEach(([k,id])=>{
-    const el = document.getElementById(id);
-    if(el) el.innerHTML = opts[k].map(v=>`<option>${v}</option>`).join('');
-  });
-}
-function saveRecord() {
-  const client = document.getElementById('f-client').value.trim();
-  if(!client){ alert('請輸入客戶名稱'); return; }
-  const rec = {
-    id: editingId || nextId++,
-    client,
-    category: document.getElementById('f-category').value,
-    product: document.getElementById('f-product').value,
-    biz: document.getElementById('f-biz').value,
-    engineer: document.getElementById('f-engineer').value,
-    status: document.getElementById('f-status').value,
-    dateStart: document.getElementById('f-date-start').value,
-    dateEnd: document.getElementById('f-date-end').value,
-    progress: Math.min(100, Math.max(0, parseInt(document.getElementById('f-progress').value)||0)),
-    link: document.getElementById('f-link').value.trim(),
-    ops: editingId ? (records.find(r=>r.id===editingId)||{ops:[]}).ops : []
-  };
-  if(editingId) { const idx = records.findIndex(r=>r.id===editingId); if(idx>-1) records[idx]=rec; }
-  else records.push(rec);
-  save();
-  clearForm();
-  alert(editingId ? '✅ 更新成功！' : '✅ 新增成功！');
-  editingId = null;
-}
-function clearForm() {
-  editingId = null;
-  document.getElementById('form-mode-label').textContent='新增資料';
-  ['f-client','f-date-start','f-date-end','f-link'].forEach(id=>{ document.getElementById(id).value=''; });
-  document.getElementById('f-progress').value='0';
-  document.getElementById('btn-delete').style.display='none';
-  populateFormSelects();
-}
-function editRecord(id) {
-  const r = records.find(x=>x.id===id);
-  if(!r) return;
-  editingId = id;
-  switchTab('input');
-  setTimeout(()=>{
-    document.getElementById('form-mode-label').textContent='編輯資料（#'+id+'）';
-    document.getElementById('f-client').value=r.client;
-    document.getElementById('f-category').value=r.category;
-    document.getElementById('f-product').value=r.product;
-    document.getElementById('f-biz').value=r.biz;
-    document.getElementById('f-engineer').value=r.engineer;
-    document.getElementById('f-status').value=r.status;
-    document.getElementById('f-date-start').value=r.dateStart||'';
-    document.getElementById('f-date-end').value=r.dateEnd||'';
-    document.getElementById('f-progress').value=r.progress;
-    document.getElementById('f-link').value=r.link||'';
-    document.getElementById('btn-delete').style.display='inline-block';
-  }, 50);
-}
-function deleteRecord() {
-  if(!editingId) return;
-  if(!confirm('確定要刪除此筆資料？此動作無法復原。')) return;
-  records = records.filter(r=>r.id!==editingId);
-  save();
-  clearForm();
-  alert('已刪除');
-}
+  if (item.type === 'restaurant') {
+    if (item.region) rows += row('地區', item.region);
+  } else if (item.type === 'hotel') {
+    if (item.region) rows += row('地區', item.region);
+    if (item.pool || item.kids || item.park) {
+      tags = `<div class="card-tags">
+        ${item.pool ? `<span class="card-tag ${item.pool==='是'?'tag-yes':'tag-no'}">泳池 ${item.pool}</span>` : ''}
+        ${item.kids ? `<span class="card-tag ${item.kids==='是'?'tag-yes':'tag-no'}">親子設施 ${item.kids}</span>` : ''}
+        ${item.park ? `<span class="card-tag ${item.park==='是'?'tag-yes':'tag-no'}">停車 ${item.park}</span>` : ''}
+      </div>`;
+    }
+  } else if (item.type === 'attraction') {
+    if (item.region) rows += row('地區', item.region);
+    if (item.park) tags = `<div class="card-tags">
+      <span class="card-tag ${item.park==='是'?'tag-yes':'tag-no'}">停車 ${item.park}</span>
+    </div>`;
+  } else if (item.type === 'shopping') {
+    if (item.where) rows += row('在哪買', item.where);
+    if (item.price) rows += row('價格', item.price);
+  }
 
-// ========== 執行 Modal ==========
-function openOpModal(id) {
-  opTargetId = id;
-  const r = records.find(x=>x.id===id);
-  document.getElementById('op-engineer').innerHTML = opts.engineer.map(e=>`<option>${e}</option>`).join('');
-  document.getElementById('op-status').innerHTML = opts.status.map(s=>`<option${r&&r.status===s?' selected':''}>${s}</option>`).join('');
-  if(r) { document.getElementById('op-engineer').value = r.engineer; document.getElementById('op-progress').value = r.progress; }
-  const now = new Date();
-  const pad = n=>String(n).padStart(2,'0');
-  document.getElementById('op-time').value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
-  document.getElementById('op-note').value = '';
-  const logArea = document.getElementById('op-log-area');
-  if(r && r.ops && r.ops.length) {
-    logArea.innerHTML = `<div class="op-log"><div class="op-log-title">歷史操作記錄</div>${r.ops.slice(-3).reverse().map(o=>`<div class="op-item">🕐 ${o.time} ｜ ${o.engineer} ｜ ${o.status} ${o.note?'｜ '+o.note:''}</div>`).join('')}</div>`;
-  } else { logArea.innerHTML=''; }
-  document.getElementById('op-modal').classList.add('open');
-}
-function closeModal() { document.getElementById('op-modal').classList.remove('open'); }
-function confirmOp() {
-  const r = records.find(x=>x.id===opTargetId);
-  if(!r) return;
-  const eng = document.getElementById('op-engineer').value;
-  const time = document.getElementById('op-time').value;
-  const sts = document.getElementById('op-status').value;
-  const prog = parseInt(document.getElementById('op-progress').value)||0;
-  const note = document.getElementById('op-note').value;
-  r.ops = r.ops||[];
-  r.ops.push({ engineer:eng, time, status:sts, progress:prog, note });
-  r.status = sts;
-  r.progress = prog;
-  save();
-  closeModal();
-  renderTable();
-  alert(`✅ 已記錄\n工程師：${eng}\n時間：${time}\n狀態：${sts}`);
-}
+  const links = [];
+  if (item.maps) links.push(`<a class="card-link link-maps" href="${esc(item.maps)}" target="_blank">📍 Google Maps</a>`);
+  if (item.url) links.push(`<a class="card-link link-url" href="${esc(item.url)}" target="_blank">🔗 推薦連結</a>`);
 
-// ========== 選單管理 ==========
-function renderSettings() {
-  const labels = { category:'產品別', product:'產品', biz:'業務', engineer:'工程師', status:'狀態' };
-  const container = document.getElementById('settings-container');
-  container.innerHTML = Object.keys(labels).map(k=>`
-    <div class="card">
-      <div class="section-title">${labels[k]}</div>
-      <ul class="options-list">${opts[k].map(v=>`<li>${v}<button onclick="removeOpt('${k}','${v.replace(/'/g,"\\'")}')">×</button></li>`).join('')}</ul>
-      <div class="add-option-row">
-        <input type="text" id="new-opt-${k}" placeholder="新增選項...">
-        <button class="btn small primary" onclick="addOpt('${k}')">新增</button>
+  const imgHtml = (item.type === 'shopping' && item.img)
+    ? `<div class="card-img-wrap" onclick="openLightbox('${item.img}')"><img src="${item.img}" alt="商品圖片" loading="lazy"></div>`
+    : '';
+
+  return `<div class="item-card">
+    ${imgHtml}
+    <div class="card-top">
+      <div class="card-icon ${item.type}">${cfg.icon}</div>
+      <div class="card-title-area">
+        <div class="card-name">${esc(item.name)}</div>
+        <span class="card-type-badge ${cfg.badge}">${cfg.label}</span>
       </div>
     </div>
-  `).join('');
-}
-function addOpt(k) {
-  const inp = document.getElementById('new-opt-'+k);
-  const val = inp.value.trim();
-  if(!val){ alert('請輸入選項名稱'); return; }
-  if(opts[k].includes(val)){ alert('已存在此選項'); return; }
-  opts[k].push(val);
-  inp.value='';
-  save();
-  renderSettings();
-}
-function removeOpt(k, v) {
-  if(!confirm(`確定刪除「${v}」？`)) return;
-  opts[k] = opts[k].filter(x=>x!==v);
-  save();
-  renderSettings();
+    <div class="card-body">
+      ${rows}
+      ${tags}
+      ${item.desc ? `<div class="card-desc">${esc(item.desc)}</div>` : ''}
+    </div>
+    ${links.length ? `<div class="card-links">${links.join('')}</div>` : ''}
+    <div class="card-footer">
+      <span class="card-date">新增於 ${item.date}</span>
+      <div style="display:flex;gap:4px">
+        <button class="btn-edit" onclick="openEditModal(${item.id})">✏️ 編輯</button>
+        <button class="btn-delete" onclick="deleteItem(${item.id})">🗑 刪除</button>
+      </div>
+    </div>
+  </div>`;
 }
 
-// ========== Google Sheet 整合 ==========
-function saveSheetUrl() {
-  const url = document.getElementById('sheet-url').value.trim();
-  localStorage.setItem('crm_sheet_url', url);
-  document.getElementById('sync-log').textContent = '✅ URL 已儲存';
-}
-function loadSheetUrl() {
-  const url = localStorage.getItem('crm_sheet_url')||'';
-  document.getElementById('sheet-url').value = url;
-}
-async function syncToSheet() {
-  const url = document.getElementById('sheet-url').value.trim();
-  if(!url){ alert('請先填入 Apps Script URL'); return; }
-  document.getElementById('sync-log').textContent = '⏳ 同步中...';
-  try {
-    const payload = { action:'sync', records, opts };
-    const res = await fetch(url, { method:'POST', body: JSON.stringify(payload) });
-    const text = await res.text();
-    document.getElementById('sync-log').textContent = '✅ 同步成功：' + text;
-    document.getElementById('sync-indicator').textContent = '已同步 ' + new Date().toLocaleTimeString();
-  } catch(e) {
-    document.getElementById('sync-log').textContent = '❌ 同步失敗：' + e.message;
-  }
-}
-async function loadFromSheet() {
-  const url = document.getElementById('sheet-url').value.trim();
-  if(!url){ alert('請先填入 Apps Script URL'); return; }
-  document.getElementById('sync-log').textContent = '⏳ 載入中...';
-  try {
-    const res = await fetch(url + '?action=load');
-    const data = await res.json();
-    if(data.records) { records = data.records; save(); renderTable(); renderStats(); }
-    if(data.opts) { opts = data.opts; save(); }
-    document.getElementById('sync-log').textContent = '✅ 載入成功，共 ' + records.length + ' 筆資料';
-  } catch(e) {
-    document.getElementById('sync-log').textContent = '❌ 載入失敗：' + e.message;
-  }
-}
-function renderGasCode() {
-  const code = `// Google Apps Script — 客戶維護管理系統後端
-// 貼到 Google Apps Script 後部署為網頁應用程式
-
-const SHEET_NAME = '資料';
-const OPTS_SHEET = '選單設定';
-
-function doGet(e) {
-  const action = e.parameter.action;
-  if (action === 'load') {
-    return loadData();
-  }
-  return ContentService.createTextOutput('OK');
+function row(label, value) {
+  return `<div class="card-row"><span class="card-label">${label}</span><span class="card-value">${esc(value)}</span></div>`;
 }
 
-function doPost(e) {
-  const payload = JSON.parse(e.postData.contents);
-  if (payload.action === 'sync') {
-    return saveData(payload.records, payload.opts);
-  }
-  return ContentService.createTextOutput('Unknown action');
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function getOrCreateSheet(name) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(name);
-  if (!sheet) sheet = ss.insertSheet(name);
-  return sheet;
-}
-
-function saveData(records, opts) {
-  const sheet = getOrCreateSheet(SHEET_NAME);
-  sheet.clearContents();
-  const headers = ['ID','客戶','產品別','產品','業務','工程師','維護開始','維護結束','進度','狀態','連結','操作記錄'];
-  sheet.appendRow(headers);
-  records.forEach(r => {
-    sheet.appendRow([
-      r.id, r.client, r.category, r.product, r.biz,
-      r.engineer, r.dateStart, r.dateEnd, r.progress,
-      r.status, r.link, JSON.stringify(r.ops||[])
-    ]);
-  });
-  // 儲存選單
-  const optsSheet = getOrCreateSheet(OPTS_SHEET);
-  optsSheet.clearContents();
-  optsSheet.appendRow(['類別', '選項值']);
-  Object.entries(opts).forEach(([k, vals]) => {
-    vals.forEach(v => optsSheet.appendRow([k, v]));
-  });
-  return ContentService.createTextOutput('已儲存 ' + records.length + ' 筆');
-}
-
-function loadData() {
-  const sheet = getOrCreateSheet(SHEET_NAME);
-  const rows = sheet.getDataRange().getValues();
-  const records = [];
-  for (let i = 1; i < rows.length; i++) {
-    const r = rows[i];
-    records.push({
-      id: r[0], client: r[1], category: r[2], product: r[3],
-      biz: r[4], engineer: r[5], dateStart: r[6], dateEnd: r[7],
-      progress: r[8], status: r[9], link: r[10],
-      ops: JSON.parse(r[11] || '[]')
+// ───── DELETE ─────
+function deleteItem(id) {
+  if (!confirm('確定要刪除這筆推薦嗎？')) return;
+  const backup = [...data];
+  data = data.filter(d => d.id !== id);  // 樂觀更新
+  syncUI();
+  apiFetch({ action: 'delete', id })
+    .catch(() => {
+      data = backup;
+      syncUI();
+      showToast('刪除失敗，請重試', '❌');
     });
-  }
-  const optsSheet = getOrCreateSheet(OPTS_SHEET);
-  const optsRows = optsSheet.getDataRange().getValues();
-  const opts = {};
-  for (let i = 1; i < optsRows.length; i++) {
-    const [k, v] = optsRows[i];
-    if (!opts[k]) opts[k] = [];
-    opts[k].push(v);
-  }
-  const result = JSON.stringify({ records, opts });
-  return ContentService.createTextOutput(result).setMimeType(ContentService.MimeType.JSON);
-}`;
-  document.getElementById('gas-code').textContent = code;
-}
-function copyGasCode() {
-  const code = document.getElementById('gas-code').textContent;
-  navigator.clipboard.writeText(code).then(()=>alert('✅ 已複製到剪貼簿'));
 }
 
-// ========== 初始化 ==========
-load();
-renderStats();
-renderTable();
-populateSearchStatus();
+// ───── EDIT MODAL ─────
+function openEditModal(id) {
+  const item = data.find(d => d.id === id);
+  if (!item) return;
+  editingId = id;
+  const cfg = typeConfig[item.type];
+  document.getElementById('editModalTitle').textContent = `✏️ 編輯 ${cfg.label}`;
+
+  let body = '';
+  const regionOpts = menuData.region.map(v => `<option value="${esc(v)}">`).join('');
+  const whereOpts = menuData.where.map(v => `<option value="${esc(v)}">`).join('');
+
+  if (item.type === 'restaurant') {
+    body = `
+      <datalist id="edl-region">${regionOpts}</datalist>
+      <div class="field-grid">
+        <div class="field-group full"><label>名稱 <span class="required">*</span></label>
+          <input id="e-name" value="${esc(item.name)}"></div>
+        <div class="field-group"><label>地區</label>
+          <input id="e-region" value="${esc(item.region||'')}" list="edl-region" autocomplete="off"></div>
+        <div class="field-group"><label>Google Maps 網址</label>
+          <input id="e-maps" type="url" value="${esc(item.maps||'')}"></div>
+        <div class="field-group full"><label>推薦網址</label>
+          <input id="e-url" type="url" value="${esc(item.url||'')}"></div>
+        <div class="field-group full"><label>描述</label>
+          <textarea id="e-desc">${esc(item.desc||'')}</textarea></div>
+      </div>`;
+  } else if (item.type === 'hotel') {
+    const yesNo = (field, val) => `
+      <div class="radio-group">
+        <div class="radio-btn yes ${val==='是'?'selected':''}" data-efield="${field}" data-val="是">✓ 有</div>
+        <div class="radio-btn no ${val==='否'?'selected':''}" data-efield="${field}" data-val="否">✗ 無</div>
+      </div>
+      <input type="hidden" id="e-${field}" value="${esc(val||'')}">`;
+    body = `
+      <datalist id="edl-region">${regionOpts}</datalist>
+      <div class="field-grid">
+        <div class="field-group full"><label>名稱 <span class="required">*</span></label>
+          <input id="e-name" value="${esc(item.name)}"></div>
+        <div class="field-group"><label>地區</label>
+          <input id="e-region" value="${esc(item.region||'')}" list="edl-region" autocomplete="off"></div>
+        <div class="field-group"><label>Google Maps 網址</label>
+          <input id="e-maps" type="url" value="${esc(item.maps||'')}"></div>
+        <div class="field-group full"><label>推薦網址</label>
+          <input id="e-url" type="url" value="${esc(item.url||'')}"></div>
+        <div class="field-group full"><label>描述</label>
+          <textarea id="e-desc">${esc(item.desc||'')}</textarea></div>
+      </div>
+      <div class="form-section-title">設施資訊</div>
+      <div class="field-grid">
+        <div class="field-group"><label>泳池</label>${yesNo('pool', item.pool)}</div>
+        <div class="field-group"><label>親子設施</label>${yesNo('kids', item.kids)}</div>
+        <div class="field-group"><label>停車</label>${yesNo('park', item.park)}</div>
+      </div>`;
+  } else if (item.type === 'attraction') {
+    const yesNo = (field, val) => `
+      <div class="radio-group">
+        <div class="radio-btn yes ${val==='是'?'selected':''}" data-efield="${field}" data-val="是">✓ 有</div>
+        <div class="radio-btn no ${val==='否'?'selected':''}" data-efield="${field}" data-val="否">✗ 無</div>
+      </div>
+      <input type="hidden" id="e-${field}" value="${esc(val||'')}">`;
+    body = `
+      <datalist id="edl-region">${regionOpts}</datalist>
+      <div class="field-grid">
+        <div class="field-group full"><label>名稱 <span class="required">*</span></label>
+          <input id="e-name" value="${esc(item.name)}"></div>
+        <div class="field-group"><label>地區</label>
+          <input id="e-region" value="${esc(item.region||'')}" list="edl-region" autocomplete="off"></div>
+        <div class="field-group"><label>Google Maps 網址</label>
+          <input id="e-maps" type="url" value="${esc(item.maps||'')}"></div>
+        <div class="field-group full"><label>推薦網址</label>
+          <input id="e-url" type="url" value="${esc(item.url||'')}"></div>
+        <div class="field-group full"><label>描述</label>
+          <textarea id="e-desc">${esc(item.desc||'')}</textarea></div>
+      </div>
+      <div class="form-section-title">停車資訊</div>
+      <div class="field-grid">
+        <div class="field-group"><label>停車</label>${yesNo('park', item.park)}</div>
+      </div>`;
+  } else if (item.type === 'shopping') {
+    body = `
+      <datalist id="edl-where">${whereOpts}</datalist>
+      <div class="field-grid">
+        <div class="field-group full"><label>品項 <span class="required">*</span></label>
+          <input id="e-name" value="${esc(item.name)}"></div>
+        <div class="field-group"><label>在哪買</label>
+          <input id="e-where" value="${esc(item.where||'')}" list="edl-where" autocomplete="off"></div>
+        <div class="field-group"><label>價格</label>
+          <input id="e-price" value="${esc(item.price||'')}"></div>
+        <div class="field-group full"><label>推薦網址</label>
+          <input id="e-url" type="url" value="${esc(item.url||'')}"></div>
+        <div class="field-group full"><label>描述</label>
+          <textarea id="e-desc">${esc(item.desc||'')}</textarea></div>
+      </div>
+      <div class="field-group" style="margin-top:12px">
+        <label>商品圖片</label>
+        ${item.img ? `<div style="margin-bottom:8px"><img src="${item.img}" style="max-height:120px;border-radius:8px;object-fit:contain"></div>` : ''}
+        <div class="img-upload-area" id="e-img-area" onclick="document.getElementById('e-img-input').click()" style="min-height:70px">
+          <div class="img-upload-placeholder" id="e-img-placeholder" style="${item.img?'display:none':''}">
+            <span style="font-size:1.5rem">📷</span>
+            <span style="font-size:0.82rem">${item.img ? '點擊更換圖片' : '點擊上傳圖片'}</span>
+          </div>
+          <img id="e-img-preview" class="img-preview-thumb" style="display:none">
+        </div>
+        <input type="file" id="e-img-input" accept="image/*" style="display:none" onchange="handleEditImgUpload(this,'${item.img?'has':'none'}')">
+        <button type="button" id="e-img-clear" class="btn-img-clear" style="margin-top:6px;${item.img?'':'display:none'}" onclick="clearEditImg()">✕ 移除圖片</button>
+        <input type="hidden" id="e-img-keep" value="${item.img ? '1' : '0'}">
+      </div>`;
+  }
+
+  document.getElementById('editModalBody').innerHTML = body;
+
+  // Bind radio btns in modal
+  document.querySelectorAll('#editModalBody .radio-btn[data-efield]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const field = btn.dataset.efield;
+      document.querySelectorAll(`#editModalBody .radio-btn[data-efield="${field}"]`).forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      document.getElementById('e-' + field).value = btn.dataset.val;
+    });
+  });
+
+  // Apply field-group styles to modal inputs
+  document.querySelectorAll('#editModalBody input:not([type=hidden]):not([type=file]), #editModalBody textarea').forEach(el => {
+    el.style.cssText = 'border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-family:Noto Sans TC,sans-serif;font-size:0.9rem;color:var(--text);background:var(--bg);outline:none;width:100%;box-sizing:border-box;';
+    el.addEventListener('focus', () => el.style.borderColor = 'var(--accent)');
+    el.addEventListener('blur', () => el.style.borderColor = 'var(--border)');
+  });
+  document.querySelectorAll('#editModalBody textarea').forEach(el => {
+    el.style.minHeight = '80px';
+    el.style.resize = 'vertical';
+  });
+
+  document.getElementById('editModal').classList.add('show');
+}
+
+let editImgBase64 = null;
+let editImgRemoved = false;
+
+function handleEditImgUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    editImgBase64 = e.target.result;
+    editImgRemoved = false;
+    const prev = document.getElementById('e-img-preview');
+    if (prev) { prev.src = editImgBase64; prev.style.display = 'block'; }
+    const ph = document.getElementById('e-img-placeholder');
+    if (ph) ph.style.display = 'none';
+    const clr = document.getElementById('e-img-clear');
+    if (clr) clr.style.display = 'inline-block';
+    document.getElementById('e-img-keep').value = '1';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearEditImg() {
+  editImgBase64 = null;
+  editImgRemoved = true;
+  const prev = document.getElementById('e-img-preview');
+  if (prev) { prev.style.display = 'none'; prev.src = ''; }
+  const ph = document.getElementById('e-img-placeholder');
+  if (ph) ph.style.display = 'flex';
+  const clr = document.getElementById('e-img-clear');
+  if (clr) clr.style.display = 'none';
+  document.getElementById('e-img-keep').value = '0';
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('show');
+  editingId = null;
+  editImgBase64 = null;
+  editImgRemoved = false;
+}
+
+function saveEdit() {
+  const idx = data.findIndex(d => d.id === editingId);
+  if (idx === -1) return;
+  const item = data[idx];
+  const name = document.getElementById('e-name')?.value.trim();
+  if (!name) { showToast('名稱不可空白', '⚠️'); return; }
+
+  item.name = name;
+  if (item.type !== 'shopping') {
+    item.region = document.getElementById('e-region')?.value.trim() || '';
+    item.maps = document.getElementById('e-maps')?.value.trim() || '';
+  }
+  item.url = document.getElementById('e-url')?.value.trim() || '';
+  item.desc = document.getElementById('e-desc')?.value.trim() || '';
+
+  if (item.type === 'hotel') {
+    item.pool = document.getElementById('e-pool')?.value || '';
+    item.kids = document.getElementById('e-kids')?.value || '';
+    item.park = document.getElementById('e-park')?.value || '';
+  } else if (item.type === 'attraction') {
+    item.park = document.getElementById('e-park')?.value || '';
+  } else if (item.type === 'shopping') {
+    item.where = document.getElementById('e-where')?.value.trim() || '';
+    item.price = document.getElementById('e-price')?.value.trim() || '';
+    const keep = document.getElementById('e-img-keep')?.value;
+    if (editImgBase64) {
+      item.img = editImgBase64;
+    } else if (editImgRemoved || keep === '0') {
+      item.img = null;
+    }
+  }
+
+  data[idx] = item;
+  closeEditModal();
+  syncUI();
+  showToast('儲存中…', '⏳');
+  apiFetch({ action: 'update', item })
+    .then(() => showToast('已儲存更新！', '✅'))
+    .catch(() => showToast('儲存失敗，請重試', '❌'));
+}
+
+// ───── REGION / WHERE FILTERS ─────
+function updateRegionFilter(selectId, type) {
+  const sel = document.getElementById(selectId);
+  const current = sel.value;
+  const regions = [...new Set(data.filter(d => d.type === type && d.region).map(d => d.region))].sort();
+  sel.innerHTML = '<option value="">全部地區</option>' + regions.map(r => `<option value="${esc(r)}" ${r===current?'selected':''}>${esc(r)}</option>`).join('');
+}
+
+function updateWhereFilter(selectId, type) {
+  const sel = document.getElementById(selectId);
+  const current = sel.value;
+  const wheres = [...new Set(data.filter(d => d.type === type && d.where).map(d => d.where))].sort();
+  sel.innerHTML = '<option value="">全部通路</option>' + wheres.map(w => `<option value="${esc(w)}" ${w===current?'selected':''}>${esc(w)}</option>`).join('');
+}
+
+// ───── RESET FILTERS ─────
+function resetFilters(type) {
+  if (type === 'restaurant') {
+    document.getElementById('rf-name').value = '';
+    document.getElementById('rf-region').value = '';
+  } else if (type === 'hotel') {
+    ['hf-name','hf-region','hf-pool','hf-kids','hf-park'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+  } else if (type === 'attraction') {
+    document.getElementById('af-name').value = '';
+    document.getElementById('af-region').value = '';
+    document.getElementById('af-park').value = '';
+  } else if (type === 'shopping') {
+    document.getElementById('sf-name').value = '';
+    document.getElementById('sf-where').value = '';
+  }
+  renderList(type);
+}
+
+// ───── TOAST ─────
+function showToast(msg, icon = '✅') {
+  const t = document.getElementById('toast');
+  t.innerHTML = `${icon} ${msg}`;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ───── HELPER ─────
+function setBtnLoading(on) {
+  const btn = document.getElementById('btnSubmit');
+  if (!btn) return;
+  btn.disabled = on;
+  btn.textContent = on ? '⏳ 儲存中…' : '＋ 新增推薦';
+}
+
+function showLoadingOverlay(msg) {
+  let el = document.getElementById('loading-overlay');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'loading-overlay';
+    el.style.cssText = 'position:fixed;inset:0;background:rgba(250,248,244,0.88);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:16px;font-family:Noto Sans TC,sans-serif;';
+    el.innerHTML = '<div style="font-size:2rem">⏳</div><div style="color:var(--text2);font-size:0.95rem"></div>';
+    document.body.appendChild(el);
+  }
+  el.querySelector('div:last-child').textContent = msg;
+  el.style.display = 'flex';
+}
+
+function hideLoadingOverlay() {
+  const el = document.getElementById('loading-overlay');
+  if (el) el.style.display = 'none';
+}
+
+// ───── INIT ─────
+(async () => {
+  if (API_URL.includes('YOUR_SCRIPT_ID')) {
+    showToast('請先設定 API_URL！', '⚠️');
+    setApiStatus('⚠️ 尚未設定 API', false);
+    updateCounts();
+    updateDatalist();
+    return;
+  }
+  showLoadingOverlay('正在從 Google Sheets 載入資料…');
+  try {
+    data = await apiLoad();
+    if (!Array.isArray(data)) data = [];
+    setApiStatus('✓ 已連線 Google Sheets', true);
+  } catch(e) {
+    showToast('載入失敗，請確認 API 網址設定', '❌');
+    setApiStatus('✗ 無法連線 Sheets', false);
+    data = [];
+  }
+  hideLoadingOverlay();
+  updateCounts();
+  updateDatalist();
+})();
 </script>
 </body>
 </html>
